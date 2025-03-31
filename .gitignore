@@ -1,0 +1,13 @@
+# Node (client)
+client/node_modules
+client/dist
+client/.env
+
+# Java (server)
+server/target
+server/.idea
+server/.env
+
+# System
+.DS_Store
+.env
