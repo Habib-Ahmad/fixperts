@@ -1,13 +1,41 @@
+# Root
+node_modules
+
 # Node (client)
-client/node_modules
-client/dist
+client/node_modules/
+client/dist/
+client/dist-ssr/
+client/*.local
 client/.env
+client/.DS_Store
+client/logs/
+client/*.log
+client/npm-debug.log*
+client/yarn-debug.log*
+client/pnpm-debug.log*
+client/lerna-debug.log*
+client/.vscode/
+client/.idea
 
 # Java (server)
-server/target
-server/.idea
-server/.env
+server/target/
+server/.mvn/wrapper/maven-wrapper.jar
+server/.idea/
+server/.vscode/
+server/.classpath
+server/.project
+server/.settings
+server/.springBeans
+server/.sts4-cache
+server/.apt_generated
+server/.factorypath
+server/build/
+server/HELP.md
 
-# System
-.DS_Store
+# Common
 .env
+.DS_Store
+.vscode/
+.idea/
+logs/
+*.log
