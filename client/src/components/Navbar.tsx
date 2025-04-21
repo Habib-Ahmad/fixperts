@@ -16,7 +16,7 @@ import {
 } from '.';
 import { Link } from 'react-router-dom';
 import { Menu } from 'lucide-react';
-import logo from '@/assets/react.svg';
+import logo from '@/assets/logo.svg';
 import { User } from '../interfaces';
 
 const links = [
