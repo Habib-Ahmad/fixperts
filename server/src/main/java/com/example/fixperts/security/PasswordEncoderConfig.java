@@ -1,4 +1,4 @@
-package com.example.fixperts.auth;
+package com.example.fixperts.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

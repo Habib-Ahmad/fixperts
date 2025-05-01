@@ -1,5 +1,6 @@
-package com.example.fixperts.user;
+package com.example.fixperts.repository;
 
+import com.example.fixperts.model.User;
 import org.springframework.data.geo.Distance;
 import org.springframework.data.geo.Point;
 import org.springframework.data.mongodb.repository.MongoRepository;

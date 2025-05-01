@@ -1,9 +1,8 @@
-package com.example.fixperts.service;
+package com.example.fixperts.model;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
-import org.springframework.data.mongodb.core.mapping.DBRef;
 
 @Document(collection = "services")
 public class Service {

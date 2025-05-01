@@ -1,4 +1,4 @@
-package com.example.fixperts.user;
+package com.example.fixperts.model;
 
 import jakarta.validation.constraints.NotEmpty;
 import org.springframework.data.annotation.Id;

@@ -1,11 +1,12 @@
 package com.example.fixperts.controller;
 
-import com.example.fixperts.service.Service;
+import com.example.fixperts.model.Service;
 import com.example.fixperts.service.ServiceService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 @RestController
@@ -50,7 +51,7 @@ public class ServiceController {
     @SecurityRequirement(name = "bearerAuth")
     @PostMapping
     public ResponseEntity<Service> create(
-            @AuthenticationPrincipal com.example.fixperts.user.User user,
+            @AuthenticationPrincipal com.example.fixperts.model.User user,
             @RequestBody Service service
     ) {
         service.setProviderId(user.getId());
@@ -61,7 +62,7 @@ public class ServiceController {
     @SecurityRequirement(name = "bearerAuth")
     @PutMapping("/{id}")
     public ResponseEntity<Service> update(
-            @AuthenticationPrincipal com.example.fixperts.user.User user,
+            @AuthenticationPrincipal com.example.fixperts.model.User user,
             @PathVariable String id,
             @RequestBody Service service
     ) {
@@ -76,7 +77,7 @@ public class ServiceController {
     @SecurityRequirement(name = "bearerAuth")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(
-            @AuthenticationPrincipal com.example.fixperts.user.User user,
+            @AuthenticationPrincipal com.example.fixperts.model.User user,
             @PathVariable String id
     ) {
         Service existing = svc.getById(id);
