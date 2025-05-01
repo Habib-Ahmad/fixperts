@@ -1,6 +1,6 @@
-package com.example.fixperts.auth;
+package com.example.fixperts.security;
 
-import com.example.fixperts.user.User;
+import com.example.fixperts.model.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;

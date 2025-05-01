@@ -1,6 +1,6 @@
 package com.example.fixperts.config;
 
-import com.example.fixperts.auth.JwtAuthenticationFilter;
+import com.example.fixperts.security.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;

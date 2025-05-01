@@ -1,5 +1,7 @@
-package com.example.fixperts.user;
+package com.example.fixperts.service;
 
+import com.example.fixperts.model.User;
+import com.example.fixperts.repository.UserRepository;
 import org.springframework.data.geo.Distance;
 import org.springframework.data.geo.Point;
 import org.springframework.stereotype.Service;

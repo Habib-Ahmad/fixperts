@@ -1,7 +1,8 @@
-package com.example.fixperts.auth;
+package com.example.fixperts.security;
 
-import com.example.fixperts.user.User;
-import com.example.fixperts.user.UserService;
+import com.example.fixperts.security.JwtUtil;
+import com.example.fixperts.model.User;
+import com.example.fixperts.service.UserService;
 import com.mongodb.lang.NonNull;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

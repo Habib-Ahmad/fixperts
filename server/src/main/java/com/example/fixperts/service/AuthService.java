@@ -1,7 +1,10 @@
-package com.example.fixperts.auth;
+package com.example.fixperts.service;
 
-import com.example.fixperts.user.User;
-import com.example.fixperts.user.UserRepository;
+import com.example.fixperts.controller.AuthController;
+import com.example.fixperts.security.JwtUtil;
+import com.example.fixperts.dto.LoginResponse;
+import com.example.fixperts.model.User;
+import com.example.fixperts.repository.UserRepository;
 import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;

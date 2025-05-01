@@ -1,8 +1,9 @@
-package com.example.fixperts.service;
+package com.example.fixperts.repository;
 
-import com.example.fixperts.service.Service;
+import com.example.fixperts.model.Service;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
+
 import java.util.List;
 
 public interface ServiceRepository extends MongoRepository<Service, String> {
