@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Button,
   DropdownMenu,
@@ -68,7 +68,7 @@ const UserMenu = ({
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="flex items-center space-x-2">
           <Avatar className="h-6 w-6">
-            <AvatarImage src={user.image} alt={user.firstName} />
+            <AvatarImage src={user.image || 'https://github.com/shadcn.png'} alt={user.firstName} />
           </Avatar>
           <span>{userName}</span>
         </Button>
@@ -88,16 +88,22 @@ const UserMenu = ({
 };
 
 const Navbar = () => {
-  const [user, setUser] = useState<User | null>({
-    id: '1',
-    email: 'john.doe@gmail.com',
-    firstName: 'John',
-    lastName: 'Doe',
-    image: 'https://github.com/shadcn.png',
-    role: 'user',
-  });
+  const [user, setUser] = useState<User | null>(null);
 
-  const logout = () => setUser(null);
+  useEffect(() => {
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    } else {
+      setUser(null);
+    }
+  }, []);
+
+  const logout = () => {
+    localStorage.removeItem('user');
+    localStorage.removeItem('token');
+    setUser(null);
+  };
 
   const NavLinks = () => (
     <ul className="flex flex-col md:flex-row gap-4 md:gap-6">
