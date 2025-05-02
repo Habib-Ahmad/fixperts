@@ -63,4 +63,8 @@ public class ServiceService {
         }
         return getAll();
     }
+
+    public List<com.example.fixperts.model.Service> getByProvider(String providerId) {
+        return repo.findByProviderId(providerId);
+    }
 }

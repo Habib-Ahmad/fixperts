@@ -1,9 +1,12 @@
 package com.example.fixperts.service;
 
+import com.example.fixperts.model.Booking;
 import com.example.fixperts.model.User;
+import com.example.fixperts.repository.BookingRepository;
 import com.example.fixperts.repository.UserRepository;
 import org.springframework.data.geo.Distance;
 import org.springframework.data.geo.Point;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,9 +15,40 @@ import java.util.List;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final BCryptPasswordEncoder passwordEncoder;
+    private final BookingRepository bookingRepository;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder, BookingRepository bookingRepository) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.bookingRepository = bookingRepository;
+    }
+    public User updateProfile(User user, String firstName, String lastName, String oldPassword, String newPassword) {
+        if (firstName != null && !firstName.isEmpty()) {
+            user.setFirstName(firstName);
+        }
+        if (lastName != null && !lastName.isEmpty()) {
+            user.setLastName(lastName);
+        }
+
+        // If password is to be changed, verify the old one
+        if (oldPassword != null && newPassword != null &&
+                !oldPassword.isEmpty() && !newPassword.isEmpty()) {
+            if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
+                throw new IllegalArgumentException("Old password is incorrect");
+            }
+            user.setPassword(passwordEncoder.encode(newPassword));
+        }
+
+        return userRepository.save(user);
+    }
+    public boolean deleteAccount(User user, String rawPassword) {
+        if (!passwordEncoder.matches(rawPassword, user.getPassword())) {
+            return false;
+        }
+
+        userRepository.deleteById(user.getId());
+        return true;
     }
 
     public User getUserById(String id) {
@@ -27,5 +61,25 @@ public class UserService {
 
     public List<User> getNearbyServiceProviders(Point location, Distance distance) {
         return userRepository.findByRoleAndLocationNear(User.Role.SERVICE_PROVIDER, location, distance);
+    }
+
+    public List<Booking> getBookings(String id) {
+        User user = userRepository.findById(id).orElse(null);
+        if (user != null) {
+        }
+        return null;
+    }
+
+    public User update(String id, User updatedUser) {
+        User existing =    userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        existing.setFirstName(updatedUser.getFirstName());
+        existing.setLastName(updatedUser.getLastName());
+        existing.setEmail(updatedUser.getEmail());
+        existing.setPassword(updatedUser.getPassword());
+        existing.setLocation(updatedUser.getLocation());
+        existing.setRole(updatedUser.getRole());  // Only this matters here
+
+        return userRepository.save(existing);
     }
 }

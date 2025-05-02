@@ -68,4 +68,14 @@ public class BookingController {
     ) {
         return ResponseEntity.ok(bookingService.updateStatus(id, status));
     }
+    @GetMapping("/customer/{customerId}")
+    public ResponseEntity<List<Booking>> bookingsByCustomerId(@PathVariable String customerId) {
+        return ResponseEntity.ok(bookingService.getByCustomer(customerId));
+    }
+
+    // Get bookings for a specific provider (by ID)
+    @GetMapping("/provider/{providerId}")
+    public ResponseEntity<List<Booking>> bookingsByProviderId(@PathVariable String providerId) {
+        return ResponseEntity.ok(bookingService.getByProvider(providerId));
+    }
 }

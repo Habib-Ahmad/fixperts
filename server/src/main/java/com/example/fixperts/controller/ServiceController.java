@@ -1,7 +1,9 @@
 package com.example.fixperts.controller;
 
 import com.example.fixperts.model.Service;
+import com.example.fixperts.model.User;
 import com.example.fixperts.service.ServiceService;
+import com.example.fixperts.service.UserService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -14,9 +16,10 @@ import java.util.List;
 @CrossOrigin(origins = "http://localhost:5173")
 public class ServiceController {
     private final ServiceService svc;
-
-    public ServiceController(ServiceService svc) {
+    private final UserService userService;
+    public ServiceController(ServiceService svc, UserService userService) {
         this.svc = svc;
+        this.userService = userService;
     }
 
     @GetMapping
@@ -55,7 +58,15 @@ public class ServiceController {
             @RequestBody Service service
     ) {
         service.setProviderId(user.getId());
-        return ResponseEntity.ok(svc.create(service));
+        Service created = svc.create(service);
+
+        // Check if user is not already a SERVICE_PROVIDER
+        if (user.getRole() != User.Role.SERVICE_PROVIDER) {
+            user.setRole(User.Role.SERVICE_PROVIDER);
+            userService.update(user.getId(), user);  // Add this method if not already present
+        }
+
+        return ResponseEntity.ok(created);
     }
 
     // Update existing
@@ -86,5 +97,10 @@ public class ServiceController {
         }
         svc.delete(id);
         return ResponseEntity.noContent().build();
+    }
+    @SecurityRequirement(name = "bearerAuth")
+    @GetMapping("/provider/{providerId}")
+    public ResponseEntity<List<Service>> getByProviderId(@PathVariable String providerId) {
+        return ResponseEntity.ok(svc.getByProvider(providerId));
     }
 }

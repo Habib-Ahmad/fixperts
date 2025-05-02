@@ -1,5 +1,8 @@
 package com.example.fixperts.controller;
 
+import com.example.fixperts.dto.DeleteAccountRequest;
+import com.example.fixperts.dto.UpdateProfileRequest;
+import com.example.fixperts.model.Booking;
 import com.example.fixperts.model.User;
 import com.example.fixperts.service.UserService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -8,10 +11,7 @@ import org.springframework.data.geo.Metrics;
 import org.springframework.data.geo.Point;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -41,4 +41,35 @@ public class UserController {
         List<User> providers = userService.getNearbyServiceProviders(location, distance);
         return ResponseEntity.ok(providers);
     }
+    @SecurityRequirement(name = "bearerAuth")
+    @PutMapping("/me")
+    public ResponseEntity<?> updateProfile(
+            @AuthenticationPrincipal User user,
+            @RequestBody UpdateProfileRequest request
+    ) {
+        try {
+            User updated = userService.updateProfile(user, request.getFirstName(), request.getLastName(),
+                    request.getOldPassword(), request.getNewPassword());
+            return ResponseEntity.ok(updated);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @SecurityRequirement(name = "bearerAuth")
+    @DeleteMapping("/delete")
+    public ResponseEntity<?> deleteAccount(@AuthenticationPrincipal User user,
+                                           @RequestBody DeleteAccountRequest request) {
+        boolean deleted = userService.deleteAccount(user, request.getPassword());
+
+        if (!deleted) {
+            return ResponseEntity.status(403).body("Incorrect password.");
+        }
+
+        return ResponseEntity.ok("Account deleted successfully.");
+
+    }
+
+
+
 }

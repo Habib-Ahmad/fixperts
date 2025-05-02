@@ -19,6 +19,9 @@ public interface ServiceRepository extends MongoRepository<Service, String> {
     // find emergency services
     List<Service> findByEmergencyAvailableTrue();
 
+    List<Service> findByProviderId(String providerId);
+
+
     // combine price & emergency
     @Query("{ 'price': { $gte: ?0, $lte: ?1 }, 'emergencyAvailable': ?2 }")
     List<Service> findByPriceBetweenAndEmergency(double min, double max, boolean emergency);
