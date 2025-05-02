@@ -15,16 +15,28 @@ public class Service {
     private String name;
     private String description;
     private double price;
-    private String category;
+    private ServiceCategory category; // Change from String to ServiceCategory enum
     private boolean emergencyAvailable;
-
-
     private double averageRating;
 
-    // constructors
+    // Enum for service categories (10 categories)
+    public enum ServiceCategory {
+        PLUMBING,
+        ELECTRICAL,
+        CLEANING,
+        HVAC,
+        APPLIANCE_REPAIR,
+        PEST_CONTROL,
+        LANDSCAPING,
+        PAINTING,
+        MOVING,
+        HANDYMAN
+    }
+
+    // Constructors
     public Service() {}
 
-    public Service(String providerId, String name, String description, double price, String category, boolean emergencyAvailable) {
+    public Service(String providerId, String name, String description, double price, ServiceCategory category, boolean emergencyAvailable) {
         this.providerId = providerId;
         this.name = name;
         this.description = description;
@@ -33,8 +45,9 @@ public class Service {
         this.emergencyAvailable = emergencyAvailable;
     }
 
-    // getters & setters
+    // Getters and Setters
     public String getId() { return id; }
+
     public String getProviderId() { return providerId; }
     public void setProviderId(String providerId) { this.providerId = providerId; }
 
@@ -47,8 +60,8 @@ public class Service {
     public double getPrice() { return price; }
     public void setPrice(double price) { this.price = price; }
 
-    public String getCategory() { return category; }
-    public void setCategory(String category) { this.category = category; }
+    public ServiceCategory getCategory() { return category; }
+    public void setCategory(ServiceCategory category) { this.category = category; }
 
     public boolean isEmergencyAvailable() { return emergencyAvailable; }
     public void setEmergencyAvailable(boolean emergencyAvailable) { this.emergencyAvailable = emergencyAvailable; }
