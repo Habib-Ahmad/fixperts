@@ -22,27 +22,27 @@ const SignupPage = () => {
 
   const navigate = useNavigate();
 
-  // const getLocation = (): Promise<{ lat: number; long: number }> => {
-  //   return new Promise((resolve, reject) => {
-  //     if (!navigator.geolocation) {
-  //       reject(new Error('Geolocation not supported'));
-  //       return;
-  //     }
+  const getLocation = (): Promise<{ lat: number; long: number }> => {
+    return new Promise((resolve, reject) => {
+      if (!navigator.geolocation) {
+        reject(new Error('Geolocation not supported'));
+        return;
+      }
 
-  //     navigator.geolocation.getCurrentPosition(
-  //       (position) =>
-  //         resolve({
-  //           lat: position.coords.latitude,
-  //           long: position.coords.longitude,
-  //         }),
-  //       (error) => reject(error)
-  //     );
-  //   });
-  // };
+      navigator.geolocation.getCurrentPosition(
+        (position) =>
+          resolve({
+            lat: position.coords.latitude,
+            long: position.coords.longitude,
+          }),
+        (error) => reject(error)
+      );
+    });
+  };
 
   const handleSubmit = async (values: FormValues) => {
     try {
-      // const location = await getLocation();
+      const location = await getLocation();
 
       const payload = {
         firstName: values.firstname,
@@ -50,8 +50,8 @@ const SignupPage = () => {
         email: values.email,
         password: values.password,
         role: 'user',
-        latitude: 0,
-        longitude: 0,
+        latitude: location?.lat || 0,
+        longitude: location?.long || 0,
       };
 
       await signup(payload);

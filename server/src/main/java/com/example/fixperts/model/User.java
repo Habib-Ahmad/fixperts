@@ -17,7 +17,7 @@ public class User {
     @NotEmpty
     private String email;
     @NotEmpty
-    private String password; // Hashed password
+    private String password;// Hashed password
     @NotEmpty
     private Role role; // USER or SERVICE_PROVIDER
 
@@ -34,7 +34,6 @@ public class User {
     }
     public enum Role {
         USER,
-        SERVICE_PROVIDER,
         ADMIN
     }
 

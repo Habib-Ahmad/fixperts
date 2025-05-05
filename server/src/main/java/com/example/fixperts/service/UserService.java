@@ -1,8 +1,10 @@
 package com.example.fixperts.service;
 
 import com.example.fixperts.model.Booking;
+import com.example.fixperts.model.ServiceModel;
 import com.example.fixperts.model.User;
 import com.example.fixperts.repository.BookingRepository;
+import com.example.fixperts.repository.ServiceRepository;
 import com.example.fixperts.repository.UserRepository;
 import org.springframework.data.geo.Distance;
 import org.springframework.data.geo.Point;
@@ -12,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -20,12 +23,14 @@ public class UserService {
     private final BCryptPasswordEncoder passwordEncoder;
     private final BookingRepository bookingRepository;
     private final FileStorageService fileStorageService;
+    private final ServiceRepository serviceRepository;
 
-    public UserService(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder, BookingRepository bookingRepository, FileStorageService fileStorageService) {
+    public UserService(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder, BookingRepository bookingRepository, FileStorageService fileStorageService, ServiceRepository serviceRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.bookingRepository = bookingRepository;
         this.fileStorageService = fileStorageService;
+        this.serviceRepository = serviceRepository;
     }
     public User updateProfile(User user, String firstName, String lastName, String oldPassword, String newPassword) {
         if (firstName != null && !firstName.isEmpty()) {
@@ -63,10 +68,22 @@ public class UserService {
         return userRepository.findByEmail(email).orElse(null);
     }
 
-    public List<User> getNearbyServiceProviders(Point location, Distance distance) {
-        return userRepository.findByRoleAndLocationNear(User.Role.SERVICE_PROVIDER, location, distance);
+
+    public List<User> getNearbyUsersWithServices(Point location, Distance distance) {
+    // Step 1: Find all users within the distance
+        List<User> nearbyUsers = userRepository.findByLocationNear(location, distance);
+
+    // Step 2: Filter users who have at least one service
+    return nearbyUsers.stream()
+            .filter(user -> hasAtLeastOneService(user))
+            .collect(Collectors.toList());
     }
 
+    private boolean hasAtLeastOneService(User user) {
+        List<ServiceModel> services = serviceRepository.findByProviderId(user.getId());
+
+        return !services.isEmpty();
+    }
     public List<Booking> getBookings(String id) {
         User user = userRepository.findById(id).orElse(null);
         if (user != null) {
@@ -96,5 +113,9 @@ public class UserService {
         } catch (IOException e) {
             throw new RuntimeException("Failed to store file", e);
         }
+    }
+
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
     }
 }

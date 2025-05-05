@@ -11,5 +11,6 @@ import java.util.Optional;
 public interface UserRepository extends MongoRepository<User, String> {
     Optional<User> findByEmail(String email);
 
-    List<User> findByRoleAndLocationNear(User.Role role, Point location, Distance distance);
+
+    List<User> findByLocationNear(Point location, Distance distance);
 }

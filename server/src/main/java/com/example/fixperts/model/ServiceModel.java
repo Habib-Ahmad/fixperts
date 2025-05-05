@@ -21,6 +21,8 @@ public class ServiceModel {
     private boolean emergencyAvailable;
     private double averageRating;
     private List<String> mediaUrls;
+    private boolean isValidated;
+
     // Enum for service categories (10 categories)
     public enum ServiceCategory {
         PLUMBING,
