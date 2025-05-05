@@ -8,7 +8,9 @@ import org.springframework.data.geo.Distance;
 import org.springframework.data.geo.Point;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @Service
@@ -17,11 +19,13 @@ public class UserService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
     private final BookingRepository bookingRepository;
+    private final FileStorageService fileStorageService;
 
-    public UserService(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder, BookingRepository bookingRepository) {
+    public UserService(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder, BookingRepository bookingRepository, FileStorageService fileStorageService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.bookingRepository = bookingRepository;
+        this.fileStorageService = fileStorageService;
     }
     public User updateProfile(User user, String firstName, String lastName, String oldPassword, String newPassword) {
         if (firstName != null && !firstName.isEmpty()) {
@@ -81,5 +85,16 @@ public class UserService {
         existing.setRole(updatedUser.getRole());  // Only this matters here
 
         return userRepository.save(existing);
+    }
+
+    public String uploadProfilePicture(User user, MultipartFile file) {
+        try {
+            String imageUrl = fileStorageService.storeProfilePicture(file, user.getId());
+            user.setProfilePictureUrl(imageUrl);
+            userRepository.save(user);
+            return imageUrl;
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to store file", e);
+        }
     }
 }

@@ -23,10 +23,19 @@ public class User {
 
     @GeoSpatialIndexed(type = org.springframework.data.mongodb.core.index.GeoSpatialIndexType.GEO_2DSPHERE)
     private GeoJsonPoint location; // longitude, latitude
+    private String profilePictureUrl;
 
+    public String getProfilePictureUrl() {
+        return profilePictureUrl;
+    }
+
+    public void setProfilePictureUrl(String profilePictureUrl) {
+        this.profilePictureUrl = profilePictureUrl;
+    }
     public enum Role {
         USER,
-        SERVICE_PROVIDER
+        SERVICE_PROVIDER,
+        ADMIN
     }
 
     public User(String firstName, String lastName, String email, String password, Role role, GeoJsonPoint location) {

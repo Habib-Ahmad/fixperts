@@ -27,6 +27,7 @@ public class Booking {
         CANCELLED
     }
 
+
     public BookingStatus getStatus() {
         return status;
     }
