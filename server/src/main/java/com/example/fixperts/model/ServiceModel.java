@@ -46,6 +46,7 @@ public class ServiceModel {
         this.price = price;
         this.category = category;
         this.emergencyAvailable = emergencyAvailable;
+        this.isValidated = false; // false until an admin accepts the service
     }
 
     // Getters and Setters
@@ -79,4 +80,7 @@ public class ServiceModel {
 
     public double getAverageRating() { return averageRating; }
     public void setAverageRating(double averageRating) { this.averageRating = averageRating; }
+
+    public boolean isValidated() { return isValidated; }
+    public void setValidated(boolean validated) { isValidated = validated; }
 }

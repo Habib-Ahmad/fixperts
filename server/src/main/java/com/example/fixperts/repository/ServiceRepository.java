@@ -21,8 +21,12 @@ public interface ServiceRepository extends MongoRepository<ServiceModel, String>
 
     List<ServiceModel> findByProviderId(String providerId);
 
+    // get all the services not yet validated by admin
+    List<ServiceModel> findByValidatedFalse();
 
     // combine price & emergency
     @Query("{ 'price': { $gte: ?0, $lte: ?1 }, 'emergencyAvailable': ?2 }")
     List<ServiceModel> findByPriceBetweenAndEmergency(double min, double max, boolean emergency);
+
+
 }

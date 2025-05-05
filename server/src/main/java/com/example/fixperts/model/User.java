@@ -53,6 +53,7 @@ public class User {
         this.password = password;
         this.role = role;
         this.location = location;
+        this.isBanned = false;
     }
 
     public String getId() { return id; }

@@ -1,5 +1,6 @@
 package com.example.fixperts.controller;
 
+import com.example.fixperts.model.ServiceModel;
 import com.example.fixperts.model.User;
 import com.example.fixperts.service.AdminService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -54,6 +55,15 @@ public class AdminController {
         }
         adminService.banUser(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/services")
+    public ResponseEntity<List<ServiceModel>> getAllUnvalidatedServices(@AuthenticationPrincipal User admin) {
+        if (admin.getRole() != User.Role.ADMIN) {
+            return ResponseEntity.status(403).build(); // Forbidden if not an admin
+        }
+        List<ServiceModel> services = adminService.getAllUnvalidatedServices();
+        return ResponseEntity.ok(services);
     }
 
 
