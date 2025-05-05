@@ -64,10 +64,6 @@ public class ServiceController {
         ServiceModel created = svc.create(service);
 
         // Check if user is not already a SERVICE_PROVIDER
-        if (user.getRole() != User.Role.SERVICE_PROVIDER) {
-            user.setRole(User.Role.SERVICE_PROVIDER);
-            userService.update(user.getId(), user);  // Add this method if not already present
-        }
 
         return ResponseEntity.ok(created);
     }

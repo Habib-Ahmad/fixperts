@@ -33,15 +33,16 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
-    @GetMapping("/providers/nearby")
-    public ResponseEntity<?> findNearbyProviders(@RequestParam double latitude,
-                                                 @RequestParam double longitude,
-                                                 @RequestParam(defaultValue = "10") double distanceKm) {
+    @GetMapping("/nearby")
+    public ResponseEntity<?> findNearbyUsersWithServices(@RequestParam double latitude,
+                                                         @RequestParam double longitude,
+                                                         @RequestParam(defaultValue = "10") double distanceKm) {
         Point location = new Point(longitude, latitude);
         Distance distance = new Distance(distanceKm, Metrics.KILOMETERS);
 
-        List<User> providers = userService.getNearbyServiceProviders(location, distance);
-        return ResponseEntity.ok(providers);
+        // Get nearby users with at least one service
+        List<User> users = userService.getNearbyUsersWithServices(location, distance);
+        return ResponseEntity.ok(users);
     }
     @SecurityRequirement(name = "bearerAuth")
     @PutMapping("/me")
