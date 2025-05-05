@@ -45,4 +45,10 @@ public class AdminService {
         user.setRole(User.Role.USER);
         return userRepository.save(user);
     }
+
+    public void banUser(String id) {
+        User user = getUserById(id);
+        user.setBanned(true);
+        userRepository.save(user);
+    }
 }

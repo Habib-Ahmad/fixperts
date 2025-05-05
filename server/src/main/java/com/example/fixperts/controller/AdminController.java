@@ -48,11 +48,11 @@ public class AdminController {
     }
 
     @DeleteMapping("/users/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable String id, @AuthenticationPrincipal User admin) {
+    public ResponseEntity<Void> banUser(@PathVariable String id, @AuthenticationPrincipal User admin) {
         if (admin.getRole() != User.Role.ADMIN) {
             return ResponseEntity.status(403).build(); // Forbidden if not an admin
         }
-        adminService.deleteUser(id);
+        adminService.banUser(id);
         return ResponseEntity.noContent().build();
     }
 
