@@ -1,28 +1,28 @@
 package com.example.fixperts.repository;
 
-import com.example.fixperts.model.Service;
+import com.example.fixperts.model.ServiceModel;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 
 import java.util.List;
 
-public interface ServiceRepository extends MongoRepository<Service, String> {
+public interface ServiceRepository extends MongoRepository<ServiceModel, String> {
     // basic text search on name or description (case-insensitive)
-    List<Service> findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(String name, String description);
+    List<ServiceModel> findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(String name, String description);
 
     // filter by category
-    List<Service> findByCategoryIgnoreCase(String category);
+    List<ServiceModel> findByCategoryIgnoreCase(String category);
 
     // find within price range
-    List<Service> findByPriceBetween(double min, double max);
+    List<ServiceModel> findByPriceBetween(double min, double max);
 
     // find emergency services
-    List<Service> findByEmergencyAvailableTrue();
+    List<ServiceModel> findByEmergencyAvailableTrue();
 
-    List<Service> findByProviderId(String providerId);
+    List<ServiceModel> findByProviderId(String providerId);
 
 
     // combine price & emergency
     @Query("{ 'price': { $gte: ?0, $lte: ?1 }, 'emergencyAvailable': ?2 }")
-    List<Service> findByPriceBetweenAndEmergency(double min, double max, boolean emergency);
+    List<ServiceModel> findByPriceBetweenAndEmergency(double min, double max, boolean emergency);
 }

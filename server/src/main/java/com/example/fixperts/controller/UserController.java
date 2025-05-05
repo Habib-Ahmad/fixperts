@@ -12,8 +12,10 @@ import org.springframework.data.geo.Point;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/user")
@@ -69,6 +71,15 @@ public class UserController {
         return ResponseEntity.ok("Account deleted successfully.");
 
     }
+    @PostMapping("/me/upload-profile")
+    @SecurityRequirement(name = "bearerAuth")
+    public ResponseEntity<?> uploadProfile(@AuthenticationPrincipal User user,
+                                           @RequestParam("file") MultipartFile file) {
+        String imageUrl = userService.uploadProfilePicture(user, file);
+        return ResponseEntity.ok(Map.of("profilePictureUrl", imageUrl));
+    }
+
+
 
 
 

@@ -1,6 +1,7 @@
 package com.example.fixperts.service;
 
 import com.example.fixperts.model.Booking;
+import com.example.fixperts.model.User;
 import com.example.fixperts.repository.BookingRepository;
 import org.springframework.stereotype.Service;
 
@@ -39,4 +40,49 @@ public class BookingService {
         bookingRepo.deleteById(id);
     }
 
+    public Booking getById(String bookingId) {
+        return bookingRepo.findById(bookingId)
+                .orElseThrow(() -> new RuntimeException("Booking not found"));
+    }
+    public Booking updateStatus(String bookingId, Booking.BookingStatus newStatus, String requesterId, User.Role role) {
+        Booking booking = getById(bookingId);
+
+        boolean isProvider = booking.getProviderId().equals(requesterId);
+        boolean isCustomer = booking.getCustomerId().equals(requesterId);
+
+        switch (newStatus) {
+            case CONFIRMED:
+                if (!isProvider) throw new RuntimeException("Only the provider can confirm the booking.");
+                if (booking.getStatus() != Booking.BookingStatus.PENDING)
+                    throw new RuntimeException("Only pending bookings can be confirmed.");
+                break;
+
+            case REJECTED:
+                if (!isProvider) throw new RuntimeException("Only the provider can reject the booking.");
+                if (booking.getStatus() != Booking.BookingStatus.PENDING)
+                    throw new RuntimeException("Only pending bookings can be rejected.");
+                break;
+
+            case CANCELLED:
+                if (!isProvider && !isCustomer)
+                    throw new RuntimeException("Only the provider or customer can cancel the booking.");
+                if (!(booking.getStatus() == Booking.BookingStatus.PENDING ||
+                        booking.getStatus() == Booking.BookingStatus.CONFIRMED))
+                    throw new RuntimeException("Only pending or confirmed bookings can be cancelled.");
+                break;
+
+            case COMPLETED:
+                if (!isCustomer)
+                    throw new RuntimeException("Only the customer can mark the booking as completed.");
+                if (booking.getStatus() != Booking.BookingStatus.CONFIRMED)
+                    throw new RuntimeException("Only confirmed bookings can be completed.");
+                break;
+
+            default:
+                throw new RuntimeException("Invalid or unauthorized status transition.");
+        }
+
+        booking.setStatus(newStatus);
+        return bookingRepo.save(booking);
+    }
 }

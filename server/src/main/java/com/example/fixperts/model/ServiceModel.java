@@ -4,8 +4,10 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import java.util.List;
+
 @Document(collection = "services")
-public class Service {
+public class ServiceModel {
     @Id
     private String id;
 
@@ -18,7 +20,7 @@ public class Service {
     private ServiceCategory category; // Change from String to ServiceCategory enum
     private boolean emergencyAvailable;
     private double averageRating;
-
+    private List<String> mediaUrls;
     // Enum for service categories (10 categories)
     public enum ServiceCategory {
         PLUMBING,
@@ -34,9 +36,9 @@ public class Service {
     }
 
     // Constructors
-    public Service() {}
+    public ServiceModel() {}
 
-    public Service(String providerId, String name, String description, double price, ServiceCategory category, boolean emergencyAvailable) {
+    public ServiceModel(String providerId, String name, String description, double price, ServiceCategory category, boolean emergencyAvailable) {
         this.providerId = providerId;
         this.name = name;
         this.description = description;
@@ -65,6 +67,14 @@ public class Service {
 
     public boolean isEmergencyAvailable() { return emergencyAvailable; }
     public void setEmergencyAvailable(boolean emergencyAvailable) { this.emergencyAvailable = emergencyAvailable; }
+
+    public List<String> getMediaUrls() {
+        return mediaUrls;
+    }
+
+    public void setMediaUrls(List<String> mediaUrls) {
+        this.mediaUrls = mediaUrls;
+    }
 
     public double getAverageRating() { return averageRating; }
     public void setAverageRating(double averageRating) { this.averageRating = averageRating; }

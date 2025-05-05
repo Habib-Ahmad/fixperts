@@ -1,6 +1,7 @@
 package com.example.fixperts.controller;
 
 import com.example.fixperts.model.Booking;
+import com.example.fixperts.model.ServiceModel;
 import com.example.fixperts.model.User;
 import com.example.fixperts.service.ServiceService;
 import com.example.fixperts.service.BookingService;
@@ -32,7 +33,7 @@ public class BookingController {
             @PathVariable String serviceId,
             @RequestBody Booking bookingRequest
     ) {
-        com.example.fixperts.model.Service svc = serviceService.getById(serviceId);
+        ServiceModel svc = serviceService.getById(serviceId);
 
         bookingRequest.setCustomerId(user.getId());
         bookingRequest.setServiceId(serviceId);
@@ -78,4 +79,24 @@ public class BookingController {
     public ResponseEntity<List<Booking>> bookingsByProviderId(@PathVariable String providerId) {
         return ResponseEntity.ok(bookingService.getByProvider(providerId));
     }
+    @PutMapping("/{id}/confirm")
+    public ResponseEntity<Booking> confirm(@PathVariable String id, @AuthenticationPrincipal User user) {
+        return ResponseEntity.ok(bookingService.updateStatus(id, Booking.BookingStatus.CONFIRMED, user.getId(), user.getRole()));
+    }
+
+    @PutMapping("/{id}/reject")
+    public ResponseEntity<Booking> reject(@PathVariable String id, @AuthenticationPrincipal User user) {
+        return ResponseEntity.ok(bookingService.updateStatus(id, Booking.BookingStatus.REJECTED, user.getId(), user.getRole()));
+    }
+
+    @PutMapping("/{id}/cancel")
+    public ResponseEntity<Booking> cancel(@PathVariable String id, @AuthenticationPrincipal User user) {
+        return ResponseEntity.ok(bookingService.updateStatus(id, Booking.BookingStatus.CANCELLED, user.getId(), user.getRole()));
+    }
+
+    @PutMapping("/{id}/complete")
+    public ResponseEntity<Booking> complete(@PathVariable String id, @AuthenticationPrincipal User user) {
+        return ResponseEntity.ok(bookingService.updateStatus(id, Booking.BookingStatus.COMPLETED, user.getId(), user.getRole()));
+    }
+
 }
