@@ -1,7 +1,9 @@
 package com.example.fixperts.service;
 
+import com.example.fixperts.model.Review;
 import com.example.fixperts.model.ServiceModel;
 import com.example.fixperts.model.User;
+import com.example.fixperts.repository.ReviewRepository;
 import com.example.fixperts.repository.ServiceRepository;
 import com.example.fixperts.repository.UserRepository;
 import org.springframework.stereotype.Service;
@@ -13,11 +15,12 @@ public class AdminService {
 
     private final UserRepository userRepository;
     private final ServiceRepository serviceRepository;
+    private final ReviewRepository reviewRepository;
 
-    public AdminService(UserRepository userRepository, ServiceRepository serviceRepository) {
-
+    public AdminService(UserRepository userRepository, ServiceRepository serviceRepository, ReviewRepository reviewRepository) {
         this.userRepository = userRepository;
         this.serviceRepository = serviceRepository;
+        this.reviewRepository = reviewRepository;
     }
 
     public List<User> getAllUsers() {
@@ -71,5 +74,13 @@ public class AdminService {
         serviceRepository.deleteById(serviceId);
 
         // choice B: mark as rejected (you’d need a 'rejected' flag or status field
+    }
+
+    public List<Review> getAllReviews() {
+        return reviewRepository.findAll();
+    }
+
+    public void deleteReview(String reviewId) {
+        reviewRepository.deleteById(reviewId);
     }
 }

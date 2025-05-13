@@ -28,5 +28,8 @@ public interface ServiceRepository extends MongoRepository<ServiceModel, String>
     @Query("{ 'price': { $gte: ?0, $lte: ?1 }, 'emergencyAvailable': ?2 }")
     List<ServiceModel> findByPriceBetweenAndEmergency(double min, double max, boolean emergency);
 
+    ServiceModel save(ServiceModel service);
+    void deleteById(String id);
+
 
 }

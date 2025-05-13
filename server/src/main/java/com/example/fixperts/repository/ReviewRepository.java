@@ -8,5 +8,7 @@ import java.util.Optional;
 
 public interface ReviewRepository extends MongoRepository<Review, String> {
     List<Review> findByServiceId(String serviceId);
+    List<Review> findAll();
     Optional<Review> findByBookingId(String bookingId); // To prevent duplicate review for same booking
+    void deleteById(String id);
 }

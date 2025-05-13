@@ -1,5 +1,6 @@
 package com.example.fixperts.controller;
 
+import com.example.fixperts.model.Review;
 import com.example.fixperts.model.ServiceModel;
 import com.example.fixperts.model.User;
 import com.example.fixperts.service.AdminService;
@@ -87,6 +88,23 @@ public class AdminController {
             return ResponseEntity.status(403).build(); // Forbidden if not an admin
         }
         adminService.rejectService(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/reviews")
+    public ResponseEntity<List<Review>> listAllReviews(@AuthenticationPrincipal User admin) {
+        if (admin.getRole() != User.Role.ADMIN) {
+            return ResponseEntity.status(403).build(); // Forbidden if not an admin
+        }
+        List<Review> reviews = adminService.getAllReviews();
+        return ResponseEntity.ok(reviews);
+    }
+
+    @DeleteMapping("/reviews/{reviewId}")
+    public ResponseEntity<Void> deleteReview(
+            @PathVariable String reviewId, @AuthenticationPrincipal User admin
+    ) {
+        adminService.deleteReview(reviewId);
         return ResponseEntity.noContent().build();
     }
 
