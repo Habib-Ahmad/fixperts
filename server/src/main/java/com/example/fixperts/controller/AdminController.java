@@ -66,6 +66,32 @@ public class AdminController {
         return ResponseEntity.ok(services);
     }
 
+    @PutMapping("/services/{id}/approve")
+    public ResponseEntity<Void> approveService(
+            @PathVariable String id,
+            @AuthenticationPrincipal User admin
+    ) {
+        if (admin.getRole() != User.Role.ADMIN) {
+            return ResponseEntity.status(403).build(); // Forbidden if not an admin
+        }
+        adminService.approveService(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/services/{id}/reject")
+    public ResponseEntity<Void> rejectService(
+            @PathVariable String id,
+            @AuthenticationPrincipal User admin
+    ) {
+        if (admin.getRole() != User.Role.ADMIN) {
+            return ResponseEntity.status(403).build(); // Forbidden if not an admin
+        }
+        adminService.rejectService(id);
+        return ResponseEntity.noContent().build();
+    }
+
+
+
 
 
 }

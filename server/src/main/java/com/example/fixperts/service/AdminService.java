@@ -43,8 +43,6 @@ public class AdminService {
         userRepository.deleteById(id);
     }
 
-
-
     public User demoteToUser(String id) {
         User user = getUserById(id);
         user.setRole(User.Role.USER);
@@ -59,5 +57,19 @@ public class AdminService {
 
     public List<ServiceModel> getAllUnvalidatedServices() {
         return serviceRepository.findByValidatedFalse();
+    }
+
+    public void approveService(String serviceId) {
+        ServiceModel svc = serviceRepository.findById(serviceId)
+                .orElseThrow(() -> new RuntimeException("Service not found: " + serviceId));
+        svc.setValidated(true);
+        serviceRepository.save(svc);
+    }
+
+    public void rejectService(String serviceId) {
+        // choice A: simply delete
+        serviceRepository.deleteById(serviceId);
+
+        // choice B: mark as rejected (you’d need a 'rejected' flag or status field
     }
 }
