@@ -1,5 +1,7 @@
 package com.example.fixperts.controller;
 
+import com.example.fixperts.model.Review;
+import com.example.fixperts.model.ServiceModel;
 import com.example.fixperts.model.User;
 import com.example.fixperts.service.AdminService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -55,6 +57,58 @@ public class AdminController {
         adminService.banUser(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/services")
+    public ResponseEntity<List<ServiceModel>> getAllUnvalidatedServices(@AuthenticationPrincipal User admin) {
+        if (admin.getRole() != User.Role.ADMIN) {
+            return ResponseEntity.status(403).build(); // Forbidden if not an admin
+        }
+        List<ServiceModel> services = adminService.getAllUnvalidatedServices();
+        return ResponseEntity.ok(services);
+    }
+
+    @PutMapping("/services/{id}/approve")
+    public ResponseEntity<Void> approveService(
+            @PathVariable String id,
+            @AuthenticationPrincipal User admin
+    ) {
+        if (admin.getRole() != User.Role.ADMIN) {
+            return ResponseEntity.status(403).build(); // Forbidden if not an admin
+        }
+        adminService.approveService(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/services/{id}/reject")
+    public ResponseEntity<Void> rejectService(
+            @PathVariable String id,
+            @AuthenticationPrincipal User admin
+    ) {
+        if (admin.getRole() != User.Role.ADMIN) {
+            return ResponseEntity.status(403).build(); // Forbidden if not an admin
+        }
+        adminService.rejectService(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/reviews")
+    public ResponseEntity<List<Review>> listAllReviews(@AuthenticationPrincipal User admin) {
+        if (admin.getRole() != User.Role.ADMIN) {
+            return ResponseEntity.status(403).build(); // Forbidden if not an admin
+        }
+        List<Review> reviews = adminService.getAllReviews();
+        return ResponseEntity.ok(reviews);
+    }
+
+    @DeleteMapping("/reviews/{reviewId}")
+    public ResponseEntity<Void> deleteReview(
+            @PathVariable String reviewId, @AuthenticationPrincipal User admin
+    ) {
+        adminService.deleteReview(reviewId);
+        return ResponseEntity.noContent().build();
+    }
+
+
 
 
 

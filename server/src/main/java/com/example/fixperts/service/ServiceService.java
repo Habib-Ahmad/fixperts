@@ -99,4 +99,8 @@ public class ServiceService {
         }
     }
 
+    public List<ServiceModel> getUnvalidatedServices() {
+        return repo.findByValidatedFalse();
+    }
+
 }
