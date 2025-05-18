@@ -118,4 +118,20 @@ public class UserService {
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
+
+    public User getById(String userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+    }
+
+    public boolean removeProfilePicture(User user) {
+        String imageUrl = user.getProfilePictureUrl();
+        if (imageUrl != null) {
+            fileStorageService.deleteFile(imageUrl);
+            user.setProfilePictureUrl(null);
+            userRepository.save(user);
+            return true;
+        }
+        return false;
+    }
 }
