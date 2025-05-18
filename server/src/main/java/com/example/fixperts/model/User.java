@@ -22,9 +22,7 @@ public class User {
     private Role role; // USER or SERVICE_PROVIDER
     private boolean isBanned;
 
-    public User(boolean isBanned) {
-        this.isBanned = isBanned;
-    }
+
 
     public void setBanned(boolean banned) {
         isBanned = banned;
@@ -53,6 +51,7 @@ public class User {
         this.password = password;
         this.role = role;
         this.location = location;
+        this.isBanned = false;
     }
 
     public String getId() { return id; }
