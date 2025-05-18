@@ -38,4 +38,13 @@ public class FileStorageService {
 
         return "/uploads/" + folder + "/" + filename;
     }
+
+    public void deleteFile(String url) {
+        Path filePath = Paths.get(url);
+        try {
+            Files.deleteIfExists(filePath);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to delete file: " + url, e);
+        }
+    }
 }
