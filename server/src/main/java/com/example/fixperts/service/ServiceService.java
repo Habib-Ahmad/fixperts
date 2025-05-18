@@ -1,19 +1,26 @@
 package com.example.fixperts.service;
 
 import com.example.fixperts.repository.ServiceRepository;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import com.example.fixperts.model.ServiceModel;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class ServiceService {
+    private final MongoTemplate mongoTemplate;
+
     private final ServiceRepository repo;
     private final FileStorageService fileStorageService;
 
-    public ServiceService(ServiceRepository repo, FileStorageService fileStorageService) {
+    public ServiceService(MongoTemplate mongoTemplate, ServiceRepository repo, FileStorageService fileStorageService) {
+        this.mongoTemplate = mongoTemplate;
         this.repo = repo;
         this.fileStorageService = fileStorageService;
     }
@@ -51,28 +58,46 @@ public class ServiceService {
 
     public List<ServiceModel> advancedSearch(
             String query,
-            Double minPrice, Double maxPrice,
+            Double minPrice,
+            Double maxPrice,
             Boolean emergency,
-            String category
+            ServiceModel.ServiceCategory category  // enum type here
     ) {
+        List<Criteria> criteriaList = new ArrayList<>();
 
-        if (minPrice != null && maxPrice != null && emergency != null) {
-            return repo.findByPriceBetweenAndEmergency(minPrice, maxPrice, emergency);
+        if (query != null && !query.isEmpty()) {
+            criteriaList.add(new Criteria().orOperator(
+                    Criteria.where("name").regex(query, "i"),
+                    Criteria.where("description").regex(query, "i")
+            ));
         }
+
         if (minPrice != null && maxPrice != null) {
-            return repo.findByPriceBetween(minPrice, maxPrice);
+            criteriaList.add(Criteria.where("price").gte(minPrice).lte(maxPrice));
+        } else if (minPrice != null) {
+            criteriaList.add(Criteria.where("price").gte(minPrice));
+        } else if (maxPrice != null) {
+            criteriaList.add(Criteria.where("price").lte(maxPrice));
         }
-        if (emergency != null && emergency) {
-            return repo.findByEmergencyAvailableTrue();
+
+        if (emergency != null) {
+            criteriaList.add(Criteria.where("emergencyAvailable").is(emergency));
         }
+
         if (category != null) {
-            return repo.findByCategoryIgnoreCase(category);
+            criteriaList.add(Criteria.where("category").is(category));
         }
-        if (query != null) {
-            return repo.findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(query, query);
+
+        Criteria criteria = new Criteria();
+        if (!criteriaList.isEmpty()) {
+            criteria = new Criteria().andOperator(criteriaList.toArray(new Criteria[0]));
         }
-        return getAll();
+
+        Query queryObj = new Query(criteria);
+
+        return mongoTemplate.find(queryObj, ServiceModel.class);
     }
+
 
     public List<ServiceModel> getByProvider(String providerId) {
         return repo.findByProviderId(providerId);

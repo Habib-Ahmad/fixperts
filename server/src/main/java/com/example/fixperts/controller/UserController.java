@@ -105,7 +105,7 @@ public class UserController {
 
 
     // Upload profile picture
-    @PostMapping("/me/upload-profile")
+    @PostMapping(value = "/me/upload-profile-picture", consumes = "multipart/form-data")
     @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<?> uploadProfile(@AuthenticationPrincipal User user,
                                            @RequestParam("file") MultipartFile file) {

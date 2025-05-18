@@ -47,7 +47,7 @@ public class ServiceController {
             @RequestParam(required = false) Double minPrice,
             @RequestParam(required = false) Double maxPrice,
             @RequestParam(required = false) Boolean emergency,
-            @RequestParam(required = false) String category
+            @RequestParam(required = false) ServiceModel.ServiceCategory category  // enum type here
     ) {
         List<ServiceModel> results = svc.advancedSearch(query, minPrice, maxPrice, emergency, category);
         return ResponseEntity.ok(results);
@@ -58,7 +58,6 @@ public class ServiceController {
     public ResponseEntity<ServiceModel> getOne(@PathVariable String id) {
         return ResponseEntity.ok(svc.getById(id));
     }
-
 
     @PostMapping("")
     @SecurityRequirement(name = "bearerAuth")
