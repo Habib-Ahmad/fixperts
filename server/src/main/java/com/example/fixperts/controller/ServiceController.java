@@ -1,6 +1,7 @@
 package com.example.fixperts.controller;
 
 import com.example.fixperts.dto.CreateServiceRequest;
+import com.example.fixperts.dto.UpdateServiceRequest;
 import com.example.fixperts.model.ServiceModel;
 import com.example.fixperts.model.User;
 import com.example.fixperts.service.ServiceService;
@@ -11,6 +12,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -49,7 +52,7 @@ public class ServiceController {
     }
 
     // Get specific service
-    @GetMapping("/{id}")
+    @GetMapping(value = "/{id}", consumes = { "multipart/form-data" })
     public ResponseEntity<ServiceModel> getOne(@PathVariable String id) {
         return ResponseEntity.ok(svc.getById(id));
     }
@@ -59,7 +62,9 @@ public class ServiceController {
     @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<ServiceModel> create(
             @AuthenticationPrincipal com.example.fixperts.model.User user,
-            @RequestBody CreateServiceRequest request
+            @RequestBody CreateServiceRequest request,
+            @RequestPart(value = "files", required = false) List<MultipartFile> files
+
     ) {
         ServiceModel service = new ServiceModel();
         service.setProviderId(user.getId());
@@ -68,25 +73,58 @@ public class ServiceController {
         service.setPrice(request.getPrice());
         service.setCategory(request.getCategory());
         service.setEmergencyAvailable(request.isEmergencyAvailable());
-        service.setMediaUrls(request.getMediaUrls());
-
+        // Save service first to get ID
         ServiceModel created = svc.create(service);
+
+        if (files != null && !files.isEmpty()) {
+            // Upload files and set media URLs
+            List<String> mediaUrls = svc.uploadServiceMedia(created.getId(), files);
+            created.setMediaUrls(mediaUrls);
+            created = svc.update(created.getId(), created);
+        }
+
         return ResponseEntity.ok(created);
     }
 
     // Update existing
+    @PutMapping(value = "/{id}", consumes = { "multipart/form-data" })
     @SecurityRequirement(name = "bearerAuth")
-    @PutMapping("/{id}")
     public ResponseEntity<ServiceModel> update(
-            @AuthenticationPrincipal com.example.fixperts.model.User user,
             @PathVariable String id,
-            @RequestBody ServiceModel service
-    ) {
+            @RequestPart("service") UpdateServiceRequest request,
+            @RequestPart(value = "files", required = false) List<MultipartFile> files
+    ) throws IOException {
+
         ServiceModel existing = svc.getById(id);
-        if (!existing.getProviderId().equals(user.getId())) {
-            return ResponseEntity.status(403).build();
+
+        // Update core fields
+        existing.setName(request.getName());
+        existing.setDescription(request.getDescription());
+        existing.setPrice(request.getPrice());
+        existing.setCategory(request.getCategory());
+        existing.setEmergencyAvailable(request.isEmergencyAvailable());
+
+        // Handle media removal
+        if (request.getRemoveMediaUrls() != null) {
+            List<String> updatedUrls = new ArrayList<>(existing.getMediaUrls());
+            updatedUrls.removeAll(request.getRemoveMediaUrls());
+
+            //  delete the files from storage as well
+            svc.deleteServiceMediaFiles(request.getRemoveMediaUrls());
+
+            existing.setMediaUrls(updatedUrls);
         }
-        return ResponseEntity.ok(svc.update(id, service));
+
+        // Handle media addition
+        if (files != null && !files.isEmpty()) {
+            List<String> newMediaUrls = svc.uploadServiceMedia(id, files);
+            List<String> allMediaUrls = new ArrayList<>(existing.getMediaUrls());
+            allMediaUrls.addAll(newMediaUrls);
+            existing.setMediaUrls(allMediaUrls);
+        }
+
+        ServiceModel updated = svc.update(id, existing);
+        return ResponseEntity.ok(updated);
     }
 
     // Delete

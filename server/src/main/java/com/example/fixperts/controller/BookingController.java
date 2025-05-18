@@ -26,7 +26,6 @@ public class BookingController {
         this.serviceService = serviceService;
     }
 
-    // Create booking with description
     @SecurityRequirement(name = "bearerAuth")
     @PostMapping("/{serviceId}/book")
     public ResponseEntity<Booking> createBooking(
@@ -40,13 +39,17 @@ public class BookingController {
         booking.setCustomerId(user.getId());
         booking.setServiceId(serviceId);
         booking.setProviderId(svc.getProviderId());
-        booking.setPrice(svc.getPrice());
+
+        // 👇 Use price from request
+        booking.setPrice(request.getPrice());
+
         booking.setStatus(Booking.BookingStatus.PENDING);
         booking.setBookingDate(request.getBookingDate());
         booking.setDescription(request.getDescription());
 
         return ResponseEntity.ok(bookingService.create(booking));
     }
+
     // Get bookings for customer
     @SecurityRequirement(name = "bearerAuth")
     @GetMapping("/customer")

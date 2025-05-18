@@ -5,7 +5,7 @@ import java.time.LocalDate;
 public class CreateBookingRequest {
     private LocalDate bookingDate;
     private String description;
-
+    private double price;
 
     // Getters and Setters
     public LocalDate getBookingDate() {
@@ -22,5 +22,13 @@ public class CreateBookingRequest {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public double getPrice() {
+        return price;
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
     }
 }

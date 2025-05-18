@@ -103,4 +103,9 @@ public class ServiceService {
         return repo.findByValidatedFalse();
     }
 
+    public void deleteServiceMediaFiles(List<String> removeMediaUrls) {
+        for (String url : removeMediaUrls) {
+            fileStorageService.deleteFile(url);
+        }
+    }
 }
