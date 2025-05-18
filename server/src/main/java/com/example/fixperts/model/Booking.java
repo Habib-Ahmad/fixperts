@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 public class Booking {
     @Id
     private String id;
+    private String serviceName;
     private String serviceId;
     private String customerId;
     private String providerId;
@@ -26,6 +27,8 @@ public class Booking {
         COMPLETED,
         CANCELLED
     }
+
+
 
 
     public BookingStatus getStatus() {
@@ -90,5 +93,11 @@ public class Booking {
 
     public void setId(String id) {
         this.id = id;
+    }
+    public String getServiceName() {
+        return serviceName;
+    }
+    public void setServiceName(String serviceName) {
+        this.serviceName = serviceName;
     }
 }

@@ -23,6 +23,7 @@ import java.util.Map;
 public class ServiceController {
     private final ServiceService svc;
     private final UserService userService;
+
     public ServiceController(ServiceService svc, UserService userService) {
         this.svc = svc;
         this.userService = userService;
@@ -47,24 +48,22 @@ public class ServiceController {
             @RequestParam(required = false) Boolean emergency,
             @RequestParam(required = false) String category
     ) {
-        List<ServiceModel> results = svc.advancedSearch(query,minPrice, maxPrice, emergency, category);
+        List<ServiceModel> results = svc.advancedSearch(query, minPrice, maxPrice, emergency, category);
         return ResponseEntity.ok(results);
     }
 
     // Get specific service
-    @GetMapping( "/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<ServiceModel> getOne(@PathVariable String id) {
         return ResponseEntity.ok(svc.getById(id));
     }
 
-    // Create new (SERVICE_PROVIDER only)
-    @PostMapping
+
+    @PostMapping("")
     @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<ServiceModel> create(
             @AuthenticationPrincipal com.example.fixperts.model.User user,
-            @RequestBody CreateServiceRequest request,
-            @RequestPart(value = "files", required = false) List<MultipartFile> files
-
+            @RequestBody CreateServiceRequest request
     ) {
         ServiceModel service = new ServiceModel();
         service.setProviderId(user.getId());
@@ -73,55 +72,28 @@ public class ServiceController {
         service.setPrice(request.getPrice());
         service.setCategory(request.getCategory());
         service.setEmergencyAvailable(request.isEmergencyAvailable());
-        // Save service first to get ID
+        // No file handling here
         ServiceModel created = svc.create(service);
-
-        if (files != null && !files.isEmpty()) {
-            // Upload files and set media URLs
-            List<String> mediaUrls = svc.uploadServiceMedia(created.getId(), files);
-            created.setMediaUrls(mediaUrls);
-            created = svc.update(created.getId(), created);
-        }
-
         return ResponseEntity.ok(created);
     }
 
     // Update existing
-    @PutMapping(value = "/{id}", consumes = { "multipart/form-data" })
+    @PutMapping("/{id}")
     @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<ServiceModel> update(
             @PathVariable String id,
-            @RequestPart("service") UpdateServiceRequest request,
-            @RequestPart(value = "files", required = false) List<MultipartFile> files
-    ) throws IOException {
-
+            @RequestBody UpdateServiceRequest request
+    ) {
         ServiceModel existing = svc.getById(id);
 
-        // Update core fields
+        // Update core fields only
         existing.setName(request.getName());
         existing.setDescription(request.getDescription());
         existing.setPrice(request.getPrice());
         existing.setCategory(request.getCategory());
         existing.setEmergencyAvailable(request.isEmergencyAvailable());
 
-        // Handle media removal
-        if (request.getRemoveMediaUrls() != null) {
-            List<String> updatedUrls = new ArrayList<>(existing.getMediaUrls());
-            updatedUrls.removeAll(request.getRemoveMediaUrls());
-
-            //  delete the files from storage as well
-            svc.deleteServiceMediaFiles(request.getRemoveMediaUrls());
-
-            existing.setMediaUrls(updatedUrls);
-        }
-
-        // Handle media addition
-        if (files != null && !files.isEmpty()) {
-            List<String> newMediaUrls = svc.uploadServiceMedia(id, files);
-            List<String> allMediaUrls = new ArrayList<>(existing.getMediaUrls());
-            allMediaUrls.addAll(newMediaUrls);
-            existing.setMediaUrls(allMediaUrls);
-        }
+        // No media add/remove handling here
 
         ServiceModel updated = svc.update(id, existing);
         return ResponseEntity.ok(updated);
@@ -141,18 +113,62 @@ public class ServiceController {
         svc.delete(id);
         return ResponseEntity.noContent().build();
     }
+
     @SecurityRequirement(name = "bearerAuth")
     @GetMapping("/provider/{providerId}")
     public ResponseEntity<List<ServiceModel>> getByProviderId(@PathVariable String providerId) {
         return ResponseEntity.ok(svc.getByProvider(providerId));
     }
+
     @SecurityRequirement(name = "bearerAuth")
-    @PostMapping("/{serviceId}/upload-media")
+    @PostMapping(value = "/{serviceId}/upload-media", consumes = {"multipart/form-data"})
     public ResponseEntity<?> uploadServiceMedia(
+            @AuthenticationPrincipal User user,
             @PathVariable String serviceId,
             @RequestParam("files") List<MultipartFile> files) {
+
+        ServiceModel service = svc.getById(serviceId);
+
+        // Check if authenticated user is the service provider
+        if (!service.getProviderId().equals(user.getId())) {
+            return ResponseEntity.status(403).body("You are not the provider of this service.");
+        }
+
         List<String> imageUrls = svc.uploadServiceMedia(serviceId, files);
+        // Update service mediaUrls
+        List<String> allMediaUrls = new ArrayList<>(service.getMediaUrls());
+        allMediaUrls.addAll(imageUrls);
+        service.setMediaUrls(allMediaUrls);
+        svc.update(serviceId, service);
+
         return ResponseEntity.ok(Map.of("mediaUrls", imageUrls));
     }
 
+    @SecurityRequirement(name = "bearerAuth")
+    @PostMapping("/{serviceId}/remove-media")
+    public ResponseEntity<?> removeServiceMedia(
+            @AuthenticationPrincipal User user,
+            @PathVariable String serviceId,
+            @RequestBody List<String> mediaUrlsToRemove) {
+
+        ServiceModel service = svc.getById(serviceId);
+
+        // Check if authenticated user is the service provider
+        if (!service.getProviderId().equals(user.getId())) {
+            return ResponseEntity.status(403).body("You are not the provider of this service.");
+        }
+
+        // Delete files from storage
+        svc.deleteServiceMediaFiles(mediaUrlsToRemove);
+
+        // Remove URLs from the service media list
+        List<String> updatedUrls = new ArrayList<>(service.getMediaUrls());
+        updatedUrls.removeAll(mediaUrlsToRemove);
+        service.setMediaUrls(updatedUrls);
+
+        // Save updated service
+        svc.update(serviceId, service);
+
+        return ResponseEntity.ok(Map.of("removedMediaUrls", mediaUrlsToRemove));
+    }
 }

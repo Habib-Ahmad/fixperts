@@ -10,7 +10,6 @@ public class CreateServiceRequest {
     private double price;
     private ServiceCategory category;
     private boolean emergencyAvailable;
-    private List<String> mediaUrls;
 
     // Getters and Setters
     public String getName() { return name; }
@@ -28,6 +27,4 @@ public class CreateServiceRequest {
     public boolean isEmergencyAvailable() { return emergencyAvailable; }
     public void setEmergencyAvailable(boolean emergencyAvailable) { this.emergencyAvailable = emergencyAvailable; }
 
-    public List<String> getMediaUrls() { return mediaUrls; }
-    public void setMediaUrls(List<String> mediaUrls) { this.mediaUrls = mediaUrls; }
 }

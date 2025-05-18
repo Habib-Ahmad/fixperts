@@ -10,7 +10,6 @@ public class UpdateServiceRequest {
     private double price;
     private ServiceCategory category;
     private boolean emergencyAvailable;
-    private List<String> removeMediaUrls;  // ✅ To support selective media removal
 
     // Getters and Setters
     public String getName() { return name; }
@@ -28,6 +27,5 @@ public class UpdateServiceRequest {
     public boolean isEmergencyAvailable() { return emergencyAvailable; }
     public void setEmergencyAvailable(boolean emergencyAvailable) { this.emergencyAvailable = emergencyAvailable; }
 
-    public List<String> getRemoveMediaUrls() { return removeMediaUrls; }
-    public void setRemoveMediaUrls(List<String> removeMediaUrls) { this.removeMediaUrls = removeMediaUrls; }
+
 }
