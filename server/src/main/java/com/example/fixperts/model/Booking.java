@@ -24,6 +24,7 @@ public class Booking {
         PENDING,
         CONFIRMED,
         REJECTED,
+        PAID,
         COMPLETED,
         CANCELLED
     }

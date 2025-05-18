@@ -58,6 +58,14 @@ public class UserController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+    @GetMapping("/{userId}")
+    public ResponseEntity<?> getUserById(@PathVariable String userId) {
+        User user = userService.getById(userId);
+        if (user == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(user);
+    }
 
     @SecurityRequirement(name = "bearerAuth")
     @DeleteMapping("/delete")
@@ -72,6 +80,31 @@ public class UserController {
         return ResponseEntity.ok("Account deleted successfully.");
 
     }
+
+    // Get bookings for the current user
+    @SecurityRequirement(name = "bearerAuth")
+    @GetMapping("/me/bookings")
+    public ResponseEntity<List<Booking>> getBookings(@AuthenticationPrincipal User user) {
+        if ( user.getRole().equals("USER")) {
+            return ResponseEntity.status(403).body(null); // Forbidden if not admin
+        }
+        List<Booking> bookings = userService.getBookings(user.getId());
+        return ResponseEntity.ok(bookings);
+    }
+    // Get bookings for a specific user
+    @SecurityRequirement(name = "bearerAuth")
+    @GetMapping("/{userId}/bookings")
+    public ResponseEntity<List<Booking>> getBookingsByUserId(@PathVariable String userId) {
+        //needs to be admin to access this endpoint
+        // q: can you check that role is admin ?
+
+        List<Booking> bookings = userService.getBookings(userId);
+        return ResponseEntity.ok(bookings);
+    }
+
+
+
+    // Upload profile picture
     @PostMapping("/me/upload-profile")
     @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<?> uploadProfile(@AuthenticationPrincipal User user,
@@ -79,6 +112,18 @@ public class UserController {
         String imageUrl = userService.uploadProfilePicture(user, file);
         return ResponseEntity.ok(Map.of("profilePictureUrl", imageUrl));
     }
+
+    // Remove profile picture
+    @PostMapping("/me/remove-profile-picture")
+    @SecurityRequirement(name = "bearerAuth")
+    public ResponseEntity<?> removeProfilePicture(@AuthenticationPrincipal User user) {
+        boolean removed = userService.removeProfilePicture(user);
+        if (!removed) {
+            return ResponseEntity.badRequest().body("No profile picture to remove.");
+        }
+        return ResponseEntity.ok(Map.of("message", "Profile picture removed."));
+    }
+
 
 
 

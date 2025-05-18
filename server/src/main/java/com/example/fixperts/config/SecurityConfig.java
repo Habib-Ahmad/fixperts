@@ -37,6 +37,8 @@ public class SecurityConfig {
                                 "/api/services/search/advanced",
                                 "/api/services/provider/*"
                         ).permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/user/{userId}").permitAll()
+
                         .requestMatchers(HttpMethod.GET, "/api/services/**").permitAll()
 
                         .anyRequest().authenticated()

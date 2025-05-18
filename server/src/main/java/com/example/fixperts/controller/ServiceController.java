@@ -29,6 +29,7 @@ public class ServiceController {
         this.userService = userService;
     }
 
+
     @GetMapping
     public ResponseEntity<List<ServiceModel>> list(
             @RequestParam(required = false) String q
@@ -119,6 +120,8 @@ public class ServiceController {
     public ResponseEntity<List<ServiceModel>> getByProviderId(@PathVariable String providerId) {
         return ResponseEntity.ok(svc.getByProvider(providerId));
     }
+
+
 
     @SecurityRequirement(name = "bearerAuth")
     @PostMapping(value = "/{serviceId}/upload-media", consumes = {"multipart/form-data"})
