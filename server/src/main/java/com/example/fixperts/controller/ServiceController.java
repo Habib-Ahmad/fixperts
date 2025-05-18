@@ -52,7 +52,7 @@ public class ServiceController {
     }
 
     // Get specific service
-    @GetMapping(value = "/{id}", consumes = { "multipart/form-data" })
+    @GetMapping( "/{id}")
     public ResponseEntity<ServiceModel> getOne(@PathVariable String id) {
         return ResponseEntity.ok(svc.getById(id));
     }
