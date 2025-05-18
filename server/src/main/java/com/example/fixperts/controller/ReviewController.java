@@ -1,5 +1,6 @@
 package com.example.fixperts.controller;
 
+import com.example.fixperts.dto.ReviewCreateRequest;
 import com.example.fixperts.model.Booking;
 import com.example.fixperts.model.Review;
 import com.example.fixperts.model.User;
@@ -11,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -28,29 +30,30 @@ public class ReviewController {
     // Create review (only customer, only after booking)
     @SecurityRequirement(name = "bearerAuth")
     @PostMapping("/{bookingId}")
-    public ResponseEntity<Review> createReviewForBooking(
-            @AuthenticationPrincipal User user,
+    public ResponseEntity<Review> create(
+            @AuthenticationPrincipal com.example.fixperts.model.User user,
             @PathVariable String bookingId,
-            @RequestBody Review reviewRequest
+            @RequestBody ReviewCreateRequest request
     ) {
         Booking booking = bookingService.getById(bookingId);
 
-        // Ensure the booking belongs to the user
         if (!booking.getCustomerId().equals(user.getId())) {
             return ResponseEntity.status(403).build();
         }
 
-        // Ensure the booking is completed
         if (booking.getStatus() != Booking.BookingStatus.COMPLETED) {
-            return ResponseEntity.badRequest().body(null); // or return a meaningful error message
+            return ResponseEntity.badRequest().build();
         }
 
-        // Fill in review fields from booking info
-        reviewRequest.setBookingId(bookingId);
-        reviewRequest.setCustomerId(user.getId());
-        reviewRequest.setServiceId(booking.getServiceId());
-        Review saved = reviewService.createReview(reviewRequest);
+        Review review = new Review();
+        review.setCustomerId(user.getId());
+        review.setBookingId(bookingId);
+        review.setServiceId(booking.getServiceId());
+        review.setRating(request.getRating());
+        review.setComment(request.getComment());
+        review.setCreatedAt(LocalDateTime.now());
 
+        Review saved = reviewService.createReview(review);
         return ResponseEntity.ok(saved);
     }
     // Get all reviews for a service

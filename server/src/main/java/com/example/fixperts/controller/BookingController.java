@@ -1,5 +1,6 @@
 package com.example.fixperts.controller;
 
+import com.example.fixperts.dto.CreateBookingRequest;
 import com.example.fixperts.model.Booking;
 import com.example.fixperts.model.ServiceModel;
 import com.example.fixperts.model.User;
@@ -31,21 +32,21 @@ public class BookingController {
     public ResponseEntity<Booking> createBooking(
             @AuthenticationPrincipal User user,
             @PathVariable String serviceId,
-            @RequestBody Booking bookingRequest
+            @RequestBody CreateBookingRequest request
     ) {
         ServiceModel svc = serviceService.getById(serviceId);
 
-        bookingRequest.setCustomerId(user.getId());
-        bookingRequest.setServiceId(serviceId);
-        bookingRequest.setProviderId(svc.getProviderId());
-        bookingRequest.setPrice(svc.getPrice());
-        bookingRequest.setStatus(Booking.BookingStatus.PENDING);
+        Booking booking = new Booking();
+        booking.setCustomerId(user.getId());
+        booking.setServiceId(serviceId);
+        booking.setProviderId(svc.getProviderId());
+        booking.setPrice(svc.getPrice());
+        booking.setStatus(Booking.BookingStatus.PENDING);
+        booking.setBookingDate(request.getBookingDate());
+        booking.setDescription(request.getDescription());
 
-        // Optionally, you could validate the description or other fields here
-
-        return ResponseEntity.ok(bookingService.create(bookingRequest));
+        return ResponseEntity.ok(bookingService.create(booking));
     }
-
     // Get bookings for customer
     @SecurityRequirement(name = "bearerAuth")
     @GetMapping("/customer")

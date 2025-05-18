@@ -1,5 +1,6 @@
 package com.example.fixperts.controller;
 
+import com.example.fixperts.dto.CreateServiceRequest;
 import com.example.fixperts.model.ServiceModel;
 import com.example.fixperts.model.User;
 import com.example.fixperts.service.ServiceService;
@@ -54,17 +55,22 @@ public class ServiceController {
     }
 
     // Create new (SERVICE_PROVIDER only)
-    @SecurityRequirement(name = "bearerAuth")
     @PostMapping
+    @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<ServiceModel> create(
             @AuthenticationPrincipal com.example.fixperts.model.User user,
-            @RequestBody ServiceModel service
+            @RequestBody CreateServiceRequest request
     ) {
+        ServiceModel service = new ServiceModel();
         service.setProviderId(user.getId());
+        service.setName(request.getName());
+        service.setDescription(request.getDescription());
+        service.setPrice(request.getPrice());
+        service.setCategory(request.getCategory());
+        service.setEmergencyAvailable(request.isEmergencyAvailable());
+        service.setMediaUrls(request.getMediaUrls());
+
         ServiceModel created = svc.create(service);
-
-        // Check if user is not already a SERVICE_PROVIDER
-
         return ResponseEntity.ok(created);
     }
 
