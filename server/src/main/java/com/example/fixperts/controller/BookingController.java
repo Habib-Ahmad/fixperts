@@ -42,7 +42,7 @@ public class BookingController {
 
         // 👇 Use price from request
         booking.setPrice(request.getPrice());
-
+        booking.setServiceName(svc.getName());
         booking.setStatus(Booking.BookingStatus.PENDING);
         booking.setBookingDate(request.getBookingDate());
         booking.setDescription(request.getDescription());
