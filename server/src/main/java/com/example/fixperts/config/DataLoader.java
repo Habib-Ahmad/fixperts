@@ -1,8 +1,15 @@
+//package com.example.fixperts.config;
+//
+//import com.example.fixperts.DataLoader.DummyDataLoader;
+//import com.example.fixperts.model.Booking;
+//import com.example.fixperts.model.ServiceModel;
+//import com.example.fixperts.model.User;
 //import com.example.fixperts.repository.BookingRepository;
 //import com.example.fixperts.repository.ServiceRepository;
 //import com.example.fixperts.repository.UserRepository;
 //import org.springframework.boot.CommandLineRunner;
 //import org.springframework.stereotype.Component;
+//import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 //
 //import java.util.Arrays;
 //import java.util.List;
@@ -13,50 +20,36 @@
 //    private final UserRepository userRepository;
 //    private final ServiceRepository serviceRepository;
 //    private final BookingRepository bookingRepository;
+//    private final BCryptPasswordEncoder passwordEncoder;
 //
-//    public DataLoader(UserRepository userRepository, ServiceRepository serviceRepository, BookingRepository bookingRepository) {
+//    public DataLoader(UserRepository userRepository, ServiceRepository serviceRepository,
+//                      BookingRepository bookingRepository, BCryptPasswordEncoder passwordEncoder) {
 //        this.userRepository = userRepository;
 //        this.serviceRepository = serviceRepository;
 //        this.bookingRepository = bookingRepository;
+//        this.passwordEncoder = passwordEncoder;
 //    }
 //
 //    @Override
 //    public void run(String... args) throws Exception {
-//        // Clear existing data
 //        userRepository.deleteAll();
 //        serviceRepository.deleteAll();
 //        bookingRepository.deleteAll();
 //
-//        // Create and save users
-//        User[] users = DummyDataLoader.getUsers();
+//        // Load and save users
+//        User[] users = DummyDataLoader.getUsers(passwordEncoder);
 //        userRepository.saveAll(Arrays.asList(users));
-//
-//        // Fetch saved users with generated IDs
 //        List<User> savedUsers = userRepository.findAll();
+//        String[] userIds = savedUsers.stream().map(User::getId).toArray(String[]::new);
 //
-//        // Use all users as both providers and customers
-//        List<String> userIds = savedUsers.stream()
-//                .map(User::getId)
-//                .toList();
-//
-//        // Create and save services with random provider IDs from all users
-//        ServiceModel[] services = DummyDataLoader.getServices(userIds.toArray(new String[0]));
+//        // Load and save services
+//        ServiceModel[] services = DummyDataLoader.getServices(userIds);
 //        serviceRepository.saveAll(Arrays.asList(services));
 //
-//        // Fetch saved services with IDs
-//        List<ServiceModel> savedServices = serviceRepository.findAll();
-//        String[] serviceIds = savedServices.stream()
-//                .map(ServiceModel::getId)
-//                .toArray(String[]::new);
-//
-//        // Create and save bookings (customers and providers from same pool)
-//        Booking[] bookings = DummyDataLoader.getBookings(
-//                userIds.toArray(new String[0]), // customers
-//                userIds.toArray(new String[0]), // providers
-//                serviceIds
-//        );
+//        // Load and save bookings
+//        Booking[] bookings = DummyDataLoader.getBookings(userIds, userIds, services);
 //        bookingRepository.saveAll(Arrays.asList(bookings));
 //
-//        System.out.println("Dummy data loaded successfully!");
+//        System.out.println(" Dummy data loaded successfully!");
 //    }
 //}
