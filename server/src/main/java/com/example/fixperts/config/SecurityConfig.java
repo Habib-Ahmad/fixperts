@@ -33,10 +33,12 @@ public class SecurityConfig {
                         .requestMatchers("/api/admin/**").hasRole("ADMIN") // 🔐 Only accessible to ADMINs
                         .requestMatchers(HttpMethod.GET,
                                 "/api/services",
-                                "/api/services/*",
+                                "/api/services/{id}",
                                 "/api/services/search/advanced",
                                 "/api/services/provider/*"
                         ).permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/services/**").permitAll()
+
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
@@ -44,7 +46,6 @@ public class SecurityConfig {
 
         return http.build();
     }
-
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
