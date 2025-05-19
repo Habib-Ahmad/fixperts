@@ -28,6 +28,10 @@ public class ReviewService {
         return saved;
     }
 
+    public void deleteReview(String id) {
+        reviewRepository.deleteById(id);
+    }
+
     public List<Review> getReviewsForService(String serviceId) {
         return reviewRepository.findByServiceId(serviceId);
     }
@@ -38,5 +42,10 @@ public class ReviewService {
         ServiceModel service = serviceService.getById(serviceId);
         service.setAverageRating(average);
         serviceService.update(service.getId(), service);
+    }
+
+    public Review getById(String id) {
+        return reviewRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Review not found"));
     }
 }

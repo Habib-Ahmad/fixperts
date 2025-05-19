@@ -58,4 +58,22 @@ public class ReviewController {
     public ResponseEntity<List<Review>> getByService(@PathVariable String serviceId) {
         return ResponseEntity.ok(reviewService.getReviewsForService(serviceId));
     }
+
+    //delete a review if the user is the owner of the review
+    @SecurityRequirement(name = "bearerAuth")
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteReview(
+            @AuthenticationPrincipal com.example.fixperts.model.User user,
+            @PathVariable String id
+    ) {
+        Review review = reviewService.getById(id);
+        if (review == null) {
+            return ResponseEntity.notFound().build();
+        }
+        if (!review.getCustomerId().equals(user.getId())) {
+            return ResponseEntity.status(403).build();
+        }
+        reviewService.deleteReview(id);
+        return ResponseEntity.noContent().build();
+    }
 }
