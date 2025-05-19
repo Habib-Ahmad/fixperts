@@ -80,7 +80,7 @@ public class ServiceService {
             criteriaList.add(Criteria.where("price").lte(maxPrice));
         }
 
-        if (emergency != null) {
+        if (emergency == true) {
             criteriaList.add(Criteria.where("emergencyAvailable").is(emergency));
         }
 
