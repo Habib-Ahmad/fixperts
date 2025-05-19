@@ -18,14 +18,7 @@ import { Link } from 'react-router-dom';
 import { Menu } from 'lucide-react';
 import logo from '@/assets/logo.svg';
 import { User } from '../interfaces';
-
-const links = [
-  { name: 'Sign up as a pro', path: '/signup' },
-  { name: 'About', path: '/about' },
-  { name: 'Contact', path: '/contact' },
-  { name: 'Services', path: '/services' },
-  { name: 'Inbox', path: '/inbox' },
-];
+import { getServicesByProviderId } from '../api';
 
 const UserMenu = ({
   user,
@@ -68,7 +61,10 @@ const UserMenu = ({
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="flex items-center space-x-2">
           <Avatar className="h-6 w-6">
-            <AvatarImage src={user.image || 'https://github.com/shadcn.png'} alt={user.firstName} />
+            <AvatarImage
+              src={user.profilePictureUrl || 'https://github.com/shadcn.png'}
+              alt={user.firstName}
+            />
           </Avatar>
           <span>{userName}</span>
         </Button>
@@ -89,6 +85,22 @@ const UserMenu = ({
 
 const Navbar = () => {
   const [user, setUser] = useState<User | null>(null);
+  const [services, setServices] = useState([]);
+
+  const links = [
+    { name: 'About', path: '/about' },
+    // { name: 'Contact', path: '/contact' },
+    { name: 'Services', path: '/services' },
+    { name: 'Bookings', path: '/bookings' },
+    { name: 'Inbox', path: '/inbox' },
+  ];
+
+  const isProvider = services.length > 0;
+  if (isProvider) {
+    links.push({ name: 'My Services', path: '/my-services' });
+  } else {
+    links.unshift({ name: 'Become a Provider', path: user ? '/services/create' : '/login' });
+  }
 
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
@@ -98,6 +110,21 @@ const Navbar = () => {
       setUser(null);
     }
   }, []);
+
+  useEffect(() => {
+    const fetchServices = async () => {
+      try {
+        const response = await getServicesByProviderId(user?.id || '');
+        setServices(response);
+      } catch (error) {
+        console.error('Error fetching services:', error);
+      }
+    };
+
+    if (user) {
+      fetchServices();
+    }
+  }, [user]);
 
   const logout = () => {
     localStorage.removeItem('user');
