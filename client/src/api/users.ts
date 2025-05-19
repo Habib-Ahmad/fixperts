@@ -16,3 +16,12 @@ export const changePassword = async (data: { oldPassword: string; newPassword: s
   const response = await api.put(urls.user.updateProfile, data);
   return response.data;
 };
+
+export const updateProfilePicture = async (file: File) => {
+  const formData = new FormData();
+  formData.append('file', file);
+
+  const response = await api.post(urls.user.uploadProfilePicture, formData);
+
+  return response.data;
+};
