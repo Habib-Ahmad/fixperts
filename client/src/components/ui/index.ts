@@ -5,3 +5,7 @@ export * from './sheet';
 export * from './input';
 export * from './card';
 export * from './sonner';
+export * from './badge';
+export * from './dialog';
+export * from './tabs';
+export * from './switch';

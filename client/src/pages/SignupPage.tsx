@@ -5,8 +5,9 @@ import { Button, Card, CardContent, Input } from '../components';
 import { signup } from '../api/auth';
 import { toast } from 'sonner';
 import { Eye, EyeOff } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { getErrorMessage } from '../utils';
+import logo from '@/assets/logo.svg';
 
 interface FormValues {
   firstname: string;
@@ -23,19 +24,16 @@ const SignupPage = () => {
   const navigate = useNavigate();
 
   const getLocation = (): Promise<{ lat: number; long: number }> => {
-    return new Promise((resolve, reject) => {
-      if (!navigator.geolocation) {
-        reject(new Error('Geolocation not supported'));
-        return;
-      }
+    return new Promise((resolve) => {
+      if (!navigator.geolocation) return resolve({ lat: 0, long: 0 });
 
       navigator.geolocation.getCurrentPosition(
-        (position) =>
+        (pos) =>
           resolve({
-            lat: position.coords.latitude,
-            long: position.coords.longitude,
+            lat: pos.coords.latitude,
+            long: pos.coords.longitude,
           }),
-        (error) => reject(error)
+        () => resolve({ lat: 0, long: 0 })
       );
     });
   };
@@ -50,22 +48,30 @@ const SignupPage = () => {
         email: values.email,
         password: values.password,
         role: 'user',
-        latitude: location?.lat || 0,
-        longitude: location?.long || 0,
+        latitude: location.lat,
+        longitude: location.long,
       };
 
       await signup(payload);
+      toast.success('Account created! Please log in.');
       navigate('/login');
     } catch (error: unknown) {
-      toast.error(getErrorMessage(error) || 'An error occurred during signup. Please try again.');
+      toast.error(getErrorMessage(error) || 'Signup failed. Please try again.');
     }
   };
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
       <Card className="w-full max-w-md shadow-md">
-        <CardContent className="p-6">
+        <CardContent className="px-6">
+          <Link to="/" className="flex items-center gap-2 w-full mb-4">
+            <img src={logo} alt="Logo" className="h-8 w-8" />
+
+            <h1 className="text-2xl font-bold">Fixperts</h1>
+          </Link>
+
           <h2 className="text-2xl font-bold mb-4 text-center">Sign Up</h2>
+
           <Formik
             initialValues={{
               firstname: '',
@@ -74,7 +80,7 @@ const SignupPage = () => {
               password: '',
               confirmPassword: '',
             }}
-            validationSchema={Yup.object().shape({
+            validationSchema={Yup.object({
               firstname: Yup.string().required('First name is required'),
               lastname: Yup.string().required('Last name is required'),
               email: Yup.string().email('Invalid email').required('Email is required'),
@@ -133,7 +139,7 @@ const SignupPage = () => {
                       onClick={() => setShowConfirm((prev) => !prev)}
                       className="absolute right-3 top-2.5 text-gray-500"
                     >
-                      {showConfirm ? <EyeOff size={18} /> : <Eye size={18} />}
+                      {showConfirm ? <Eye size={18} /> : <EyeOff size={18} />}
                     </button>
                   </div>
                   <ErrorMessage
@@ -146,6 +152,13 @@ const SignupPage = () => {
                 <Button type="submit" className="w-full" disabled={isSubmitting}>
                   {isSubmitting ? 'Submitting...' : 'Create Account'}
                 </Button>
+
+                <div className="text-center text-sm mt-4">
+                  Already have an account?{' '}
+                  <Link to="/login" className="text-blue-600 hover:underline">
+                    Log in
+                  </Link>
+                </div>
               </Form>
             )}
           </Formik>

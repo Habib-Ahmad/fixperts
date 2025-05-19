@@ -9,42 +9,51 @@ import repair from '@/assets/repair.svg';
 import spanner from '@/assets/spanner.svg';
 import trash from '@/assets/trash.svg';
 import { Button, Input } from '../components';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useKeenSlider } from 'keen-slider/react';
 import 'keen-slider/keen-slider.min.css';
+import { useState } from 'react';
 
 const services = [
   {
     name: 'House Cleaning',
     icon: clean,
+    key: 'cleaning',
   },
   {
     name: 'Handyman',
     icon: spanner,
+    key: 'handyman',
   },
   {
     name: 'Electrical repair',
     icon: outlet,
+    key: 'electrical',
   },
   {
     name: 'Painting',
     icon: paint,
+    key: 'painting',
   },
   {
     name: 'Waste Removal',
     icon: trash,
+    key: 'waste',
   },
   {
     name: 'Local Moving',
     icon: move,
+    key: 'moving',
   },
   {
-    name: 'Floor installation',
+    name: 'HVAC',
     icon: floor,
+    key: 'hvac',
   },
   {
     name: 'Appliance Repair',
     icon: repair,
+    key: 'appliance',
   },
 ];
 
@@ -72,6 +81,10 @@ const reviews = [
 ];
 
 const HomePage = () => {
+  const [query, setQuery] = useState('');
+
+  const navigate = useNavigate();
+
   const [sliderRef] = useKeenSlider({
     mode: 'free',
     defaultAnimation: {
@@ -100,8 +113,16 @@ const HomePage = () => {
           Get price estimates for every <br /> home project.
         </h1>
         <div className="flex flex-col sm:flex-row items-center justify-center mt-6 gap-4 max-w-2xl mx-auto">
-          <Input type="text" placeholder="Search for services" className="w-full px-4 h-12" />
-          <Button className="px-4 h-12">Search</Button>
+          <Input
+            type="text"
+            placeholder="Search for services"
+            className="w-full px-4 h-12"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+          />
+          <Button className="px-4 h-12" onClick={() => navigate(`/services/?key=${query}`)}>
+            Search
+          </Button>
         </div>
         <p className="text-gray-500 text-sm font-semibold mt-4 flex items-center justify-center gap-1 flex-wrap">
           <span>Trusted by 4.5M+ people • 4.9/5</span>
@@ -126,7 +147,7 @@ const HomePage = () => {
           {services.map((service) => (
             <Link
               key={service.name}
-              to={`/services/?key=${service.name}`}
+              to={`/services/?key=${service.key}`}
               className="bg-white rounded-lg px-4 py-8 grid place-items-center border shadow-sm hover:shadow-lg transition duration-300 ease-in-out"
             >
               <img src={service.icon} alt={service.name} className="w-6 h-6 mb-2" />
