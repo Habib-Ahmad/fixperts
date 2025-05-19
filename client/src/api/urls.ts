@@ -8,6 +8,7 @@ export const urls = {
   user: {
     getProfile: '/user/me',
     updateProfile: '/user/me',
+    uploadProfilePicture: '/user/me/upload-profile-picture',
   },
   services: {
     create: '/services',

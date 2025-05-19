@@ -7,6 +7,8 @@ import { AlertCircle, StarIcon, CalendarCheck2, MessageSquare } from 'lucide-rea
 import { toast } from 'sonner';
 import { getErrorMessage } from '../utils';
 
+const mediaBaseUrl = import.meta.env.VITE_MEDIA_BASE_URL;
+
 const MyServiceDetailsPage = () => {
   const { id } = useParams<{ id: string }>();
   const [service, setService] = useState<Service | null>(null);
@@ -40,7 +42,7 @@ const MyServiceDetailsPage = () => {
         <div className="flex flex-col lg:flex-row gap-8">
           <div className="w-full lg:w-1/2">
             <img
-              src={service.mediaUrls[0]}
+              src={`${mediaBaseUrl}${service.mediaUrls[0]}`}
               alt={service.name}
               className="w-full h-[300px] object-cover rounded-lg"
             />

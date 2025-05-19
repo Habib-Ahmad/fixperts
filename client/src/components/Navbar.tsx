@@ -62,7 +62,11 @@ const UserMenu = ({
         <Button variant="ghost" className="flex items-center space-x-2">
           <Avatar className="h-6 w-6">
             <AvatarImage
-              src={user.profilePictureUrl || 'https://github.com/shadcn.png'}
+              src={
+                user.profilePictureUrl
+                  ? `http://localhost:8081${user.profilePictureUrl}`
+                  : 'https://github.com/shadcn.png'
+              }
               alt={user.firstName}
             />
           </Avatar>
