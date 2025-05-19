@@ -1,5 +1,6 @@
 package com.example.fixperts.controller;
 
+import com.example.fixperts.dto.CreateBookingRequest;
 import com.example.fixperts.model.Booking;
 import com.example.fixperts.model.ServiceModel;
 import com.example.fixperts.model.User;
@@ -25,25 +26,28 @@ public class BookingController {
         this.serviceService = serviceService;
     }
 
-    // Create booking with description
     @SecurityRequirement(name = "bearerAuth")
     @PostMapping("/{serviceId}/book")
     public ResponseEntity<Booking> createBooking(
             @AuthenticationPrincipal User user,
             @PathVariable String serviceId,
-            @RequestBody Booking bookingRequest
+            @RequestBody CreateBookingRequest request
     ) {
         ServiceModel svc = serviceService.getById(serviceId);
 
-        bookingRequest.setCustomerId(user.getId());
-        bookingRequest.setServiceId(serviceId);
-        bookingRequest.setProviderId(svc.getProviderId());
-        bookingRequest.setPrice(svc.getPrice());
-        bookingRequest.setStatus(Booking.BookingStatus.PENDING);
+        Booking booking = new Booking();
+        booking.setCustomerId(user.getId());
+        booking.setServiceId(serviceId);
+        booking.setProviderId(svc.getProviderId());
 
-        // Optionally, you could validate the description or other fields here
+        // 👇 Use price from request
+        booking.setPrice(request.getPrice());
+        booking.setServiceName(svc.getName());
+        booking.setStatus(Booking.BookingStatus.PENDING);
+        booking.setBookingDate(request.getBookingDate());
+        booking.setDescription(request.getDescription());
 
-        return ResponseEntity.ok(bookingService.create(bookingRequest));
+        return ResponseEntity.ok(bookingService.create(booking));
     }
 
     // Get bookings for customer
@@ -64,10 +68,13 @@ public class BookingController {
     @SecurityRequirement(name = "bearerAuth")
     @PutMapping("/{id}/status")
     public ResponseEntity<Booking> updateStatus(
+            @AuthenticationPrincipal User user,
             @PathVariable String id,
             @RequestParam Booking.BookingStatus status
     ) {
-        return ResponseEntity.ok(bookingService.updateStatus(id, status));
+        Booking updated = bookingService.updateStatus(id, status, user.getId(), user.getRole());
+        return ResponseEntity.ok(updated);
+
     }
     @GetMapping("/customer/{customerId}")
     public ResponseEntity<List<Booking>> bookingsByCustomerId(@PathVariable String customerId) {
@@ -79,24 +86,6 @@ public class BookingController {
     public ResponseEntity<List<Booking>> bookingsByProviderId(@PathVariable String providerId) {
         return ResponseEntity.ok(bookingService.getByProvider(providerId));
     }
-    @PutMapping("/{id}/confirm")
-    public ResponseEntity<Booking> confirm(@PathVariable String id, @AuthenticationPrincipal User user) {
-        return ResponseEntity.ok(bookingService.updateStatus(id, Booking.BookingStatus.CONFIRMED, user.getId(), user.getRole()));
-    }
 
-    @PutMapping("/{id}/reject")
-    public ResponseEntity<Booking> reject(@PathVariable String id, @AuthenticationPrincipal User user) {
-        return ResponseEntity.ok(bookingService.updateStatus(id, Booking.BookingStatus.REJECTED, user.getId(), user.getRole()));
-    }
-
-    @PutMapping("/{id}/cancel")
-    public ResponseEntity<Booking> cancel(@PathVariable String id, @AuthenticationPrincipal User user) {
-        return ResponseEntity.ok(bookingService.updateStatus(id, Booking.BookingStatus.CANCELLED, user.getId(), user.getRole()));
-    }
-
-    @PutMapping("/{id}/complete")
-    public ResponseEntity<Booking> complete(@PathVariable String id, @AuthenticationPrincipal User user) {
-        return ResponseEntity.ok(bookingService.updateStatus(id, Booking.BookingStatus.COMPLETED, user.getId(), user.getRole()));
-    }
 
 }

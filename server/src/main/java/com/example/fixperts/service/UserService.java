@@ -118,4 +118,31 @@ public class UserService {
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
+
+    public User getById(String userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+    }
+
+    public boolean removeProfilePicture(User user) {
+        String imageUrl = user.getProfilePictureUrl();
+        if (imageUrl != null) {
+            fileStorageService.deleteFile(imageUrl);
+            user.setProfilePictureUrl(null);
+            userRepository.save(user);
+            return true;
+        }
+        return false;
+    }
+    public int countValidBookingsByUser(User user) {
+        return (int) bookingRepository.findByCustomerId(user.getId()).stream()
+                .filter(b -> b.getStatus() != Booking.BookingStatus.PENDING &&
+                        b.getStatus() != Booking.BookingStatus.CANCELLED)
+                .count();
+    }
+
+    public int countServicesProvidedByUser(User user) {
+        return serviceRepository.findByProviderId(user.getId()).size();
+    }
+
 }

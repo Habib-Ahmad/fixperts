@@ -22,9 +22,7 @@ public class User {
     private Role role; // USER or SERVICE_PROVIDER
     private boolean isBanned;
 
-    public User(boolean isBanned) {
-        this.isBanned = isBanned;
-    }
+
 
     public void setBanned(boolean banned) {
         isBanned = banned;
