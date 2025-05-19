@@ -134,4 +134,15 @@ public class UserService {
         }
         return false;
     }
+    public int countValidBookingsByUser(User user) {
+        return (int) bookingRepository.findByCustomerId(user.getId()).stream()
+                .filter(b -> b.getStatus() != Booking.BookingStatus.PENDING &&
+                        b.getStatus() != Booking.BookingStatus.CANCELLED)
+                .count();
+    }
+
+    public int countServicesProvidedByUser(User user) {
+        return serviceRepository.findByProviderId(user.getId()).size();
+    }
+
 }
