@@ -1,5 +1,6 @@
 package com.example.fixperts.service;
 
+import com.example.fixperts.dto.NearbyServiceResponse;
 import com.example.fixperts.model.Booking;
 import com.example.fixperts.model.ServiceModel;
 import com.example.fixperts.model.User;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -68,17 +70,21 @@ public class UserService {
         return userRepository.findByEmail(email).orElse(null);
     }
 
-
-    public List<User> getNearbyUsersWithServices(Point location, Distance distance) {
-    // Step 1: Find all users within the distance
+    public List<NearbyServiceResponse> getNearbyUsersWithServices(Point location, Distance distance) {
         List<User> nearbyUsers = userRepository.findByLocationNear(location, distance);
 
-    // Step 2: Filter users who have at least one service
-    return nearbyUsers.stream()
-            .filter(user -> hasAtLeastOneService(user))
-            .collect(Collectors.toList());
-    }
+        List<NearbyServiceResponse> result = new ArrayList<>();
+        for (User user : nearbyUsers) {
+            List<ServiceModel> services = serviceRepository.findByProviderId(user.getId());
+            for (ServiceModel service : services) {
+                if (service.isValidated()) {
+                    result.add(new NearbyServiceResponse(service, user.getLocation()));
+                }
+            }
+        }
 
+        return result;
+    }
     private boolean hasAtLeastOneService(User user) {
         List<ServiceModel> services = serviceRepository.findByProviderId(user.getId());
 

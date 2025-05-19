@@ -1,6 +1,7 @@
 package com.example.fixperts.controller;
 
 import com.example.fixperts.dto.DeleteAccountRequest;
+import com.example.fixperts.dto.NearbyServiceResponse;
 import com.example.fixperts.dto.UpdateProfileRequest;
 import com.example.fixperts.dto.UserProfileResponse;
 import com.example.fixperts.model.Booking;
@@ -39,17 +40,24 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
+    @SecurityRequirement(name = "bearerAuth")
     @GetMapping("/nearby")
-    public ResponseEntity<?> findNearbyUsersWithServices(@RequestParam double latitude,
-                                                         @RequestParam double longitude,
-                                                         @RequestParam(defaultValue = "10") double distanceKm) {
-        Point location = new Point(longitude, latitude);
+    public ResponseEntity<?> findNearbyUsersWithServices(
+            @AuthenticationPrincipal User user,
+            @RequestParam(defaultValue = "10") double distanceKm) {
+
+        if (user.getLocation() == null) {
+            return ResponseEntity.badRequest().body("User location is not set.");
+        }
+
+        // Extraire latitude (Y) et longitude (X) depuis GeoJsonPoint
+        Point location = new Point(user.getLocation().getX(), user.getLocation().getY());
         Distance distance = new Distance(distanceKm, Metrics.KILOMETERS);
 
-        // Get nearby users with at least one service
-        List<User> users = userService.getNearbyUsersWithServices(location, distance);
-        return ResponseEntity.ok(users);
+        List<NearbyServiceResponse> nearbyServices = userService.getNearbyUsersWithServices(location, distance);
+        return ResponseEntity.ok(nearbyServices);
     }
+
     @SecurityRequirement(name = "bearerAuth")
     @PutMapping("/me")
     public ResponseEntity<?> updateProfile(
