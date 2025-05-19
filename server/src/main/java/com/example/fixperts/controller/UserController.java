@@ -2,6 +2,7 @@ package com.example.fixperts.controller;
 
 import com.example.fixperts.dto.DeleteAccountRequest;
 import com.example.fixperts.dto.UpdateProfileRequest;
+import com.example.fixperts.dto.UserProfileResponse;
 import com.example.fixperts.model.Booking;
 import com.example.fixperts.model.User;
 import com.example.fixperts.service.UserService;
@@ -27,10 +28,15 @@ public class UserController {
         this.userService = userService;
     }
 
+
     @SecurityRequirement(name = "bearerAuth")
     @GetMapping("/me")
     public ResponseEntity<?> getCurrentUser(@AuthenticationPrincipal User user) {
-        return ResponseEntity.ok(user);
+        int servicesProvided = userService.countServicesProvidedByUser(user);
+        int validBookings = userService.countValidBookingsByUser(user);
+
+        UserProfileResponse response = new UserProfileResponse(user, servicesProvided, validBookings);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/nearby")
