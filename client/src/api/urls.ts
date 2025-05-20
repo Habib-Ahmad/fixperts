@@ -28,4 +28,17 @@ export const urls = {
     update: (id: string) => `/bookings/update/${id}`,
     delete: (id: string) => `/bookings/delete/${id}`,
   },
+    admin: {
+    getAllUsers: '/admin/users',
+    getUserById:       (id: string) => `/admin/users/${id}`,
+    updateUser:        (id: string) => `/admin/users/${id}`,
+    deleteUser:        (id: string) => `/admin/users/${id}`,
+
+    getUnvalidatedServices: '/admin/services',
+    approveService:     (id: string) => `/admin/services/${id}/approve`,
+    rejectService:      (id: string) => `/admin/services/${id}/reject`,
+
+    getAllReviews:      '/admin/reviews',
+    deleteReview:       (id: string) => `/admin/reviews/${id}`,
+  },
 };

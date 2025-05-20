@@ -11,6 +11,8 @@ import ProfilePage from './pages/ProfilePage';
 import ServiceDetailsPage from './pages/ServiceDetailsPage';
 import ServicesPage from './pages/ServicesPage';
 import SignupPage from './pages/SignupPage';
+import AdminReviewsPage from './pages/AdminReviewsPage';
+import AdminBannedUsersPage from './pages/AdminBannedUsers';
 
 const routes = [
   {
@@ -28,6 +30,8 @@ const routes = [
       { path: '/bookings', element: <BookingsPage /> },
       { path: '/profile', element: <ProfilePage /> },
       { path: '/about', element: <AboutUsPage /> },
+      { path: '/admin/reviews', element: <AdminReviewsPage /> },
+      { path: '/admin/banned-users', element: <AdminBannedUsersPage /> },
     ],
   },
 ];
