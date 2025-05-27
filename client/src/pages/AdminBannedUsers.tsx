@@ -18,13 +18,16 @@ export default function AdminBannedUsersPage() {
     setLoading(true);
     try {
       const all = await getAllUsers();
-      setUsers(all.filter(u => u.isBanned));          // << only show banned
-    } catch {
+      console.log('Fetched users:', all);
+      setUsers(all.filter(u => u.isBanned));
+    } catch (err) {
+      console.error(err); // 👈 catch actual error
       toast.error('Failed to load users');
     } finally {
       setLoading(false);
     }
   };
+
 
   const handleUnban = async (userId: string) => {
     try {
@@ -53,9 +56,11 @@ export default function AdminBannedUsersPage() {
         {users.map(user => (
           <div
             key={user.id}
-            className="min-w-full grid grid-cols-6 border-b p-2 items-center text-sm"
+            className="min-w-full grid grid-cols-6 gap-x-4 border-b p-2 items-center text-sm"
           >
-            <div>{user.id}</div>
+            <div className="overflow-x-auto">
+              <div className="w-max">{user.id}</div>
+            </div>
             <div>{user.firstName}</div>
             <div>{user.lastName}</div>
             <div>{user.email}</div>

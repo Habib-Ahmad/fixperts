@@ -24,3 +24,16 @@ export const unbanUser = async (id: string): Promise<User> => {
   const { data } = await api.put<User>(A.updateUser(id), { isBanned: false });
   return data;
 };
+
+export const getUnapprovedServices = async (): Promise<Service[]> => {
+  const { data } = await api.get<Service[]>(urls.admin.getUnvalidatedServices);
+  return data;
+};
+
+export const approveService = async (id: string): Promise<void> => {
+  await api.put(urls.admin.approveService(id));
+};
+
+export const rejectService = async (id: string): Promise<void> => {
+  await api.put(urls.admin.rejectService(id));
+};

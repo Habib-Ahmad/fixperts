@@ -21,7 +21,8 @@ public class ServiceModel {
     private boolean emergencyAvailable;
     private double averageRating;
     private List<String> mediaUrls;
-    private boolean isValidated;
+    @Field("validated")
+    private boolean validated;
     // Enum for service categories (10 categories)
     public enum ServiceCategory {
         PLUMBING,
@@ -46,7 +47,8 @@ public class ServiceModel {
         this.price = price;
         this.category = category;
         this.emergencyAvailable = emergencyAvailable;
-        this.isValidated = false; // false until an admin accepts the service
+        this.validated = false; // false until an admin accepts the service
+        this.mediaUrls = List.of(); // Initialize with an empty list
     }
 
     // Getters and Setters
@@ -81,6 +83,6 @@ public class ServiceModel {
     public double getAverageRating() { return averageRating; }
     public void setAverageRating(double averageRating) { this.averageRating = averageRating; }
 
-    public boolean isValidated() { return isValidated; }
-    public void setValidated(boolean validated) { isValidated = validated; }
+    public boolean isValidated() { return validated; }
+    public void setValidated(boolean validated) { this.validated = validated; }
 }
