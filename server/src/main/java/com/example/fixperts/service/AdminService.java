@@ -54,7 +54,7 @@ public class AdminService {
 
     public void banUser(String id) {
         User user = getUserById(id);
-        user.setBanned(true);
+        user.setIsBanned(true);
         userRepository.save(user);
     }
 

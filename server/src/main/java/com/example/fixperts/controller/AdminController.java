@@ -24,6 +24,7 @@ public class AdminController {
 
     @GetMapping("/users")
     public ResponseEntity<List<User>> getAllUsers(@AuthenticationPrincipal User admin) {
+
         if (admin.getRole() != User.Role.ADMIN) {
             return ResponseEntity.status(403).build(); // Forbidden if not an admin
         }
@@ -107,9 +108,6 @@ public class AdminController {
         adminService.deleteReview(reviewId);
         return ResponseEntity.noContent().build();
     }
-
-
-
 
 
 }

@@ -5,6 +5,7 @@ export interface User {
   email: string;
   profilePictureUrl: string | null;
   role: string;
+  isBanned: boolean;
 }
 
 export interface SignupPayload {

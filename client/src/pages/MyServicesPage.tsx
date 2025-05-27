@@ -41,6 +41,8 @@ const MyServicesPage = () => {
           return;
         }
         const parsedUser = JSON.parse(user);
+        // print the parsed user id 
+        console.log('Parsed User ID:', parsedUser.id);
         const data = await getServicesByProviderId(parsedUser.id);
         setServices(data);
       } catch (error) {

@@ -19,14 +19,8 @@ public class User {
     @NotEmpty
     private String password;// Hashed password
     @NotEmpty
-    private Role role; // USER or SERVICE_PROVIDER
+    private Role role; // USER or ADMIN
     private boolean isBanned;
-
-
-
-    public void setBanned(boolean banned) {
-        isBanned = banned;
-    }
 
     @GeoSpatialIndexed(type = org.springframework.data.mongodb.core.index.GeoSpatialIndexType.GEO_2DSPHERE)
     private GeoJsonPoint location; // longitude, latitude
@@ -69,4 +63,10 @@ public class User {
     public void setPassword(String password) { this.password = password; }
     public void setRole(Role role) { this.role = role; }
     public void setLocation(GeoJsonPoint location) { this.location = location; }
+    public boolean getIsBanned() {
+        return isBanned;
+    }
+    public void setIsBanned(boolean isBanned) {
+        this.isBanned = isBanned;
+    }
 }
