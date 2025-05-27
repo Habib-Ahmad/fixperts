@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, Button, Input } from '../components';
 import { toast } from 'sonner';
-import { updateProfile, changePassword } from '../api';
+import { updateProfile, changePassword, updateProfilePicture, getLoggedInUser } from '../api';
 import { getErrorMessage } from '../utils';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
@@ -46,6 +46,22 @@ const ProfilePage = () => {
     }
   };
 
+  const handleImageUpload = async (file: File) => {
+    if (!user) return;
+
+    try {
+      const updated = await updateProfilePicture(file);
+      console.log('Updated user:', updated);
+
+      const updatedUser = await getLoggedInUser();
+      setUser(updatedUser);
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+      toast.success('Profile picture updated!');
+    } catch (err) {
+      toast.error(getErrorMessage(err) || 'Failed to upload profile picture');
+    }
+  };
+
   if (!user) return null;
 
   return (
@@ -72,6 +88,19 @@ const ProfilePage = () => {
             >
               {({ isSubmitting }) => (
                 <Form className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Profile Picture</label>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => {
+                        const file = e.currentTarget.files?.[0];
+                        if (file) handleImageUpload(file);
+                      }}
+                      className="block w-full text-sm file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white hover:file:bg-primary/90 focus:outline-none"
+                    />
+                  </div>
+
                   <div className="flex gap-4">
                     <div className="flex-1">
                       <label>First Name</label>
@@ -113,7 +142,11 @@ const ProfilePage = () => {
             <div className="space-y-4">
               <div className="flex items-center gap-4">
                 <img
-                  src={user.profilePictureUrl || 'https://github.com/shadcn.png'}
+                  src={
+                    user.profilePictureUrl
+                      ? `http://localhost:8081${user.profilePictureUrl}`
+                      : 'https://github.com/shadcn.png'
+                  }
                   alt="Profile"
                   className="w-16 h-16 rounded-full object-cover border"
                 />

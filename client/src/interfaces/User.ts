@@ -3,7 +3,7 @@ export interface User {
   firstName: string;
   lastName: string;
   email: string;
-  profilePictureUrl: string;
+  profilePictureUrl: string | null;
   role: string;
   isBanned: boolean;
 }
@@ -14,8 +14,10 @@ export interface SignupPayload {
   email: string;
   password: string;
   role: string;
-  latitude: number;
-  longitude: number;
+  location: {
+    x: number;
+    y: number;
+  };
 }
 
 export interface LoginPayload {
