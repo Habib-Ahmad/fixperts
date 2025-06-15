@@ -12,7 +12,6 @@ export const updateServiceMedia = async (id: string, mediaUrls: File[]) => {
   mediaUrls.forEach((file) => {
     formData.append('files', file);
   });
-  console.log('FormData:', formData);
   const response = await api.post(urls.services.uploadMedia(id), formData);
   return response.data;
 };

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
-import { getServiceById, getUserById, getReviewsForService } from '../api';
+import { useNavigate, useParams, Link } from 'react-router-dom';
+import { getOrCreateConversation, getServiceById, getUserById, getReviewsForService } from '../api';
 import { Service, User, Review } from '../interfaces';
 import { Loader, Badge, Button, Modal, BookingForm } from '../components';
 import { AlertCircle, StarIcon, Clock, MessageSquare, CreditCard } from 'lucide-react';
@@ -16,6 +16,8 @@ const ServiceDetailsPage = () => {
   const [reviews, setReviews] = useState<(Review & { author?: User })[]>([]);
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
+
+  const navigate = useNavigate();
   const currentUser = JSON.parse(localStorage.getItem('user') || 'null');
 
   useEffect(() => {
@@ -52,6 +54,26 @@ const ServiceDetailsPage = () => {
 
     fetchService();
   }, [id]);
+
+  const handleMessageProvider = async () => {
+    try {
+      const user = localStorage.getItem('user');
+      if (!user) {
+        toast.error('You must be logged in to message the provider');
+        return;
+      }
+      const parsedUser: User = JSON.parse(user);
+
+      if (!service?.providerId) {
+        toast.error('Provider information is missing for this service.');
+        return;
+      }
+      const conversation = await getOrCreateConversation(parsedUser.id, service.providerId);
+      navigate(`/inbox?conversationId=${conversation.id}`);
+    } catch (err) {
+      toast.error(getErrorMessage(err) || 'Failed to start conversation');
+    }
+  };
 
   if (loading) return <Loader />;
   if (!service) return <p className="text-center text-muted-foreground">Service not found.</p>;
@@ -99,7 +121,7 @@ const ServiceDetailsPage = () => {
               <span className="text-yellow-600 font-medium">
                 {service.averageRating.toFixed(1)}
               </span>
-              <span className="text-muted-foreground text-yellow-600 ">rating</span>
+              <span className="text-muted-foreground">rating</span>
             </div>
             {service.emergencyAvailable && (
               <Badge variant="secondary" className="flex items-center gap-1">
@@ -132,7 +154,7 @@ const ServiceDetailsPage = () => {
               <Modal open={showModal} onClose={() => setShowModal(false)} title="Book This Service">
                 <BookingForm service={service} />
               </Modal>
-              <Button variant="outline" className="w-full sm:w-fit">
+              <Button variant="outline" className="w-full sm:w-fit" onClick={handleMessageProvider}>
                 <MessageSquare className="w-4 h-4 mr-2" />
                 Message Provider
               </Button>

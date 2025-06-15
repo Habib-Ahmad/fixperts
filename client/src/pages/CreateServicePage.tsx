@@ -51,7 +51,6 @@ const CreateServicePage = () => {
   const navigate = useNavigate();
 
   const handleSubmit = async (values: FormValues) => {
-    console.log('Form values:', values);
     try {
       // Step 1: Create service without media
       const { mediaUrls, ...serviceWithoutMedia } = values;
@@ -71,12 +70,8 @@ const CreateServicePage = () => {
 
       // Workaround for the upload issue
       if (files.length > 0) {
-        console.log('Uploading media files:', files);
-        files.forEach((f, i) => console.log(`File ${i}:`, f.name, f.type));
-
         for (let attempt = 1; attempt <= 3; attempt++) {
           try {
-            console.log(`Attempt ${attempt} to upload media...`);
             await updateServiceMedia(created.id, files);
             break;
           } catch (err) {

@@ -18,7 +18,6 @@ export default function AdminBannedUsersPage() {
     setLoading(true);
     try {
       const all = await getAllUsers();
-      console.log('Fetched users:', all);
       setUsers(all.filter((u) => u.isBanned));
     } catch (err) {
       console.error(err); // 👈 catch actual error

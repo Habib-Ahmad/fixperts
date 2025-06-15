@@ -17,8 +17,8 @@ import AdminServicesPage from './pages/AdminServicesPage';
 import UserProfilePage from './pages/UserProfile';
 import AdminDashboardPage from './pages/AdminDashboardPage';
 import AdminAllUsersPage from './pages/AdminAllUsersPage';
-import path from 'path';
 import SchedulePage from './pages/SchedulePage';
+import InboxPage from './pages/InboxPage';
 
 const routes = [
   {
@@ -31,13 +31,14 @@ const routes = [
       { path: '/services', element: <ServicesPage /> },
       { path: '/services/:id', element: <ServiceDetailsPage /> },
       { path: '/services/create', element: <CreateServicePage /> },
-      { path: '/schedule', element: <SchedulePage /> }, // Assuming this is a typo and should be CreateServicePage
+      { path: '/schedule', element: <SchedulePage /> },
       { path: '/my-services', element: <MyServicesPage /> },
       { path: '/my/services/:id', element: <MyServiceDetailsPage /> },
       { path: '/bookings', element: <BookingsPage /> },
       { path: '/profile', element: <ProfilePage /> },
       { path: '/profile/:id', element: <UserProfilePage /> },
       { path: '/about', element: <AboutUsPage /> },
+      { path: '/inbox', element: <InboxPage /> },
       { path: '/admin/reviews', element: <AdminReviewsPage />},
       { path: '/admin/banned-users', element: <AdminBannedUsersPage /> },
       { path: '/admin/pending-services', element: <AdminServicesPage /> },

@@ -14,5 +14,4 @@ public class FixpertsApplication {
 
 		SpringApplication.run(FixpertsApplication.class, args);
 	}
-
 }
