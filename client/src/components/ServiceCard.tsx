@@ -34,9 +34,9 @@ export default function ServiceCard({ service }: Props) {
         )}
         <p className="text-sm mb-3 line-clamp-3">{service.description}</p>
         <div className="flex flex-wrap gap-2 items-center justify-between">
-          <div className="flex items-center gap-1 text-muted-foreground text-sm">
-            <StarIcon className="w-4 h-4" />
-            {service.averageRating.toFixed(1)}
+          <div className="flex items-center text-sm gap-1">
+            <StarIcon className="w-4 h-4 fill-yellow-400 stroke-yellow-400" />
+            <span className="text-yellow-600 font-medium">{service.averageRating.toFixed(1)}</span>
           </div>
           {service.emergencyAvailable && (
             <Badge variant="destructive" className="flex items-center gap-1">

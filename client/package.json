@@ -20,6 +20,7 @@
     "axios": "^1.9.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "date-fns": "^4.1.0",
     "formik": "^2.4.6",
     "keen-slider": "^6.8.6",
     "lucide-react": "^0.502.0",
