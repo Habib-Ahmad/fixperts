@@ -15,6 +15,7 @@ import AdminReviewsPage from './pages/AdminReviewsPage';
 import AdminBannedUsersPage from './pages/AdminBannedUsers';
 import AdminServicesPage from './pages/AdminServicesPage';
 import UserProfilePage from './pages/UserProfile';
+import AdminDashboardPage from './pages/AdminDashboardPage';
 import path from 'path';
 
 const routes = [
@@ -34,9 +35,10 @@ const routes = [
       { path: '/profile', element: <ProfilePage /> },
       { path: '/profile/:id', element: <UserProfilePage /> },
       { path: '/about', element: <AboutUsPage /> },
-      { path: '/admin/reviews', element: <AdminReviewsPage /> },
+      { path: '/admin/reviews', element: <AdminReviewsPage />},
       { path: '/admin/banned-users', element: <AdminBannedUsersPage /> },
       { path: '/admin/pending-services', element: <AdminServicesPage /> },
+      { path: '/admin/dashboard', element: <AdminDashboardPage /> },
     ],
   },
 ];
