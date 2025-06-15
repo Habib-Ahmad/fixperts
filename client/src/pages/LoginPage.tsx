@@ -25,8 +25,14 @@ const LoginPage = () => {
   ) => {
     try {
       const response = await login(values);
-
       const { token, user } = response;
+
+      if (user.isBanned) {
+        toast.error('Your account has been banned.');
+        setSubmitting(false);
+        return;
+      }
+
       localStorage.setItem('token', token);
       localStorage.setItem('user', JSON.stringify(user));
 

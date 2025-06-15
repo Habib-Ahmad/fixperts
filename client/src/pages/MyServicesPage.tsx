@@ -106,6 +106,15 @@ const MyServicesPage = () => {
               <tr className="bg-gray-100 text-left text-sm text-muted-foreground">
                 <th className="px-4 py-2">Name</th>
                 <th className="px-4 py-2">Category</th>
+                <th className="px-4 py-2 flex items-center gap-1">
+                  Validated
+                  <span
+                    className="text-gray-400 cursor-pointer"
+                    title="The admin needs to validate your service for it to be visible."
+                  >
+                    ℹ️
+                  </span>
+                </th>
                 <th className="px-4 py-2">Price</th>
                 <th className="px-4 py-2">Emergency</th>
                 <th className="px-4 py-2">Actions</th>
@@ -116,13 +125,14 @@ const MyServicesPage = () => {
                 <tr key={service.id} className="text-sm border-t">
                   <td className="px-4 py-2">{service.name}</td>
                   <td className="px-4 py-2">{service.category}</td>
+                  <td className="px-4 py-2">{service.validated ? 'Yes' : 'No'}</td>
                   <td className="px-4 py-2">${service.price}</td>
                   <td className="px-4 py-2">{service.emergencyAvailable ? 'Yes' : 'No'}</td>
                   <td className="px-4 py-2 flex gap-2">
                     <Button
                       size="sm"
                       variant="outline"
-                      onClick={() => navigate(`/my/services/${service.id}`)}
+                      onClick={() => navigate(`/services/${service.id}`)}
                     >
                       <Eye className="w-4 h-4" />
                     </Button>

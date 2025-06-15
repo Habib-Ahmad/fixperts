@@ -6,6 +6,7 @@ import com.example.fixperts.repository.ReviewRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ReviewService {
@@ -19,12 +20,18 @@ public class ReviewService {
     }
 
     public Review createReview(Review review) {
-        if (reviewRepository.findByBookingId(review.getBookingId()).isPresent()) {
-            throw new IllegalStateException("Review already exists for this booking.");
+        // Ensure one review per booking per author
+        if (reviewRepository.findByBookingIdAndAuthorId(review.getBookingId(), review.getAuthorId()).isPresent()) {
+            throw new IllegalStateException("You have already submitted a review for this booking.");
         }
 
         Review saved = reviewRepository.save(review);
-        updateServiceRating(review.getServiceId());
+
+        // Update service rating if the review is for a service
+        if ("SERVICE".equals(review.getTargetType())) {
+            updateServiceRating(review.getTargetId());
+        }
+
         return saved;
     }
 
@@ -33,12 +40,17 @@ public class ReviewService {
     }
 
     public List<Review> getReviewsForService(String serviceId) {
-        return reviewRepository.findByServiceId(serviceId);
+        return reviewRepository.findByTargetIdAndTargetType(serviceId, "SERVICE");
+    }
+
+    public List<Review> getReviewsForClient(String clientId) {
+        return reviewRepository.findByTargetIdAndTargetType(clientId, "CLIENT");
     }
 
     private void updateServiceRating(String serviceId) {
-        List<Review> reviews = reviewRepository.findByServiceId(serviceId);
+        List<Review> reviews = reviewRepository.findByTargetIdAndTargetType(serviceId, "SERVICE");
         double average = reviews.stream().mapToInt(Review::getRating).average().orElse(0.0);
+
         ServiceModel service = serviceService.getById(serviceId);
         service.setAverageRating(average);
         serviceService.update(service.getId(), service);
@@ -48,4 +60,8 @@ public class ReviewService {
         return reviewRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Review not found"));
     }
+    public Optional<Review> getByBookingAndAuthor(String bookingId, String authorId) {
+        return reviewRepository.findByBookingIdAndAuthorId(bookingId, authorId);
+    }
+
 }

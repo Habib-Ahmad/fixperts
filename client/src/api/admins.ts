@@ -20,8 +20,17 @@ export const getAllUsers = async (): Promise<User[]> => {
   return data;
 };
 
+export const banUser = async (id: string): Promise<void> => {
+  await api.delete(urls.admin.deleteUser(id));
+};
+
 export const unbanUser = async (id: string): Promise<User> => {
   const { data } = await api.put<User>(A.updateUser(id), { isBanned: false });
+  return data;
+};
+
+export const updateUser = async (id: string, updates: Partial<User>): Promise<User> => {
+  const { data } = await api.put<User>(urls.admin.updateUser(id), updates);
   return data;
 };
 
@@ -36,4 +45,14 @@ export const approveService = async (id: string): Promise<void> => {
 
 export const rejectService = async (id: string): Promise<void> => {
   await api.put(urls.admin.rejectService(id));
+};
+
+export const getAdminOverview = async (): Promise<Record<string, number>> => {
+  const { data } = await api.get('/admin/stats/overview');
+  return data;
+};
+
+export const getBookingsByDay = async (days = 30): Promise<Record<string, number>> => {
+  const { data } = await api.get(`/admin/stats/bookings-by-day?days=${days}`);
+  return data;
 };

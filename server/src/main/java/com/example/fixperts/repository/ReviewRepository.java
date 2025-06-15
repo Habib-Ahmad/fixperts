@@ -2,13 +2,22 @@ package com.example.fixperts.repository;
 
 import com.example.fixperts.model.Review;
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.Query;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface ReviewRepository extends MongoRepository<Review, String> {
-    List<Review> findByServiceId(String serviceId);
+
+    // Used to get reviews about a service or a client
+    List<Review> findByTargetIdAndTargetType(String targetId, String targetType);
+
+    // Prevent duplicate reviews from the same user for the same booking
+    Optional<Review> findByBookingIdAndAuthorId(String bookingId, String authorId);
+
+    // Optional: still allows fetching all reviews (e.g., for admin)
     List<Review> findAll();
-    Optional<Review> findByBookingId(String bookingId); // To prevent duplicate review for same booking
+
     void deleteById(String id);
+
 }

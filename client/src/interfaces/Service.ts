@@ -3,12 +3,14 @@ export interface Service extends ServicePayload {
   providerId: string;
   mediaUrls: string[];
   averageRating: number;
+  validated: boolean;
 }
 
 export interface ServicePayload {
   name: string;
   description: string;
   price: number;
+  isValidated: boolean;
   category: ServiceCategory;
   emergencyAvailable: boolean;
 }

@@ -25,3 +25,7 @@ export const updateProfilePicture = async (file: File) => {
 
   return response.data;
 };
+export const getUserById = async (userId: string) => {
+  const response = await api.get(urls.user.getById(userId));
+  return response.data;
+};

@@ -10,7 +10,7 @@ public class Payment {
     @Id
     private String id;
     private String bookingId;
-    private String userId; // usually the client
+    private String userId; // provider
     private double amount;
     private PaymentStatus status;
     private LocalDateTime timestamp;
@@ -18,7 +18,6 @@ public class Payment {
     public enum PaymentStatus {
         PENDING,
         PAID,
-        FAILED
     }
 
     public String getBookingId() {

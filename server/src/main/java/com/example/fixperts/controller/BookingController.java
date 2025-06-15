@@ -86,6 +86,44 @@ public class BookingController {
     public ResponseEntity<List<Booking>> bookingsByProviderId(@PathVariable String providerId) {
         return ResponseEntity.ok(bookingService.getByProvider(providerId));
     }
+    @SecurityRequirement(name = "bearerAuth")
+    @PostMapping("/{bookingId}/quote")
+    public ResponseEntity<Booking> sendQuote(
+            @AuthenticationPrincipal User user,
+            @PathVariable String bookingId,
+            @RequestParam double price
+    ) {
+        Booking quoted = bookingService.sendQuote(bookingId, user.getId(), price);
+        return ResponseEntity.ok(quoted);
+    }
+
+    @SecurityRequirement(name = "bearerAuth")
+    @PostMapping("/{bookingId}/pay")
+    public ResponseEntity<Booking> pay(
+            @AuthenticationPrincipal User user,
+            @PathVariable String bookingId
+    ) {
+        Booking paid = bookingService.updateStatus(bookingId, Booking.BookingStatus.PAID, user.getId(), user.getRole());
+        return ResponseEntity.ok(paid);
+    }
+
+    @SecurityRequirement(name = "bearerAuth")
+    @GetMapping("/{id}")
+    public ResponseEntity<Booking> getBookingById(@PathVariable String id, @AuthenticationPrincipal User requester) {
+        Booking booking = bookingService.getById(id);
+
+        // Allow access only if:
+        // - Admin
+        // - or booking belongs to this customer or provider
+        if (!requester.getRole().equals(User.Role.ADMIN) &&
+                !booking.getCustomerId().equals(requester.getId()) &&
+                !booking.getProviderId().equals(requester.getId())) {
+            return ResponseEntity.status(403).build();
+        }
+
+        return ResponseEntity.ok(booking);
+    }
+
 
 
 }

@@ -91,19 +91,25 @@ const Navbar = () => {
   const [user, setUser] = useState<User | null>(null);
   const [services, setServices] = useState([]);
 
+  const isAdmin = user?.role === 'ADMIN';
+  const isProvider = services.length > 0;
+
   const links = [
     { name: 'About', path: '/about' },
-    // { name: 'Contact', path: '/contact' },
     { name: 'Services', path: '/services' },
     { name: 'Bookings', path: '/bookings' },
     { name: 'Inbox', path: '/inbox' },
+    { name: 'Schedule', path: '/schedule' },
   ];
 
-  const isProvider = services.length > 0;
   if (isProvider) {
     links.push({ name: 'My Services', path: '/my-services' });
   } else {
     links.unshift({ name: 'Become a Provider', path: user ? '/services/create' : '/login' });
+  }
+
+  if (isAdmin) {
+    links.push({ name: 'Admin Dashboard', path: '/admin/dashboard' });
   }
 
   useEffect(() => {
@@ -163,7 +169,7 @@ const Navbar = () => {
         <UserMenu user={user} onLogout={logout} />
       </nav>
 
-      {/* Mobile menu button */}
+      {/* Mobile menu */}
       <div className="md:hidden">
         <Sheet>
           <SheetTrigger asChild>
