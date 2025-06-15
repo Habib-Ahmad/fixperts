@@ -1,13 +1,16 @@
-// src/pages/AdminReviewsPage.tsx
 import { useEffect, useState } from 'react';
 import { getAllReviews, deleteReview } from '../api/admins';
-import { Review } from '../interfaces';
+import { Review, Booking } from '../interfaces';
 import { Button } from '../components/ui/button';
 import { toast } from 'sonner';
+import { Link } from 'react-router-dom';
+import { getBookingById } from '../api/bookings';
 
 export default function AdminReviewsPage() {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
+  const [reviewServiceMap, setReviewServiceMap] = useState<Record<string, string>>({});
+  const [mapReady, setMapReady] = useState(false);
 
   useEffect(() => {
     fetchReviews();
@@ -18,6 +21,23 @@ export default function AdminReviewsPage() {
     try {
       const data = await getAllReviews();
       setReviews(data);
+
+      const map: Record<string, string> = {};
+      await Promise.all(
+        data.map(async (r) => {
+          try {
+            const booking: Booking = await getBookingById(r.bookingId);
+            console.log('Resolved serviceId for review', r.id, '→', booking.serviceId);
+            map[r.id] = booking.serviceId;
+          } catch (err) {
+            console.error(`Failed to get booking for review ${r.id}:`, err);
+          }
+        })
+      );
+
+      setReviewServiceMap(map);
+      setMapReady(true);
+      
     } catch {
       toast.error('Could not load reviews');
     } finally {
@@ -42,42 +62,39 @@ export default function AdminReviewsPage() {
     <section className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">All Reviews</h1>
       <div className="overflow-x-auto rounded-lg shadow">
-        <div className="min-w-full grid grid-cols-6 bg-gray-100 p-2 text-sm font-semibold text-gray-700">
-          <div>ID</div>
-          <div>Service ID</div>
-          <div>Booking ID</div>
-          <div>Customer ID</div>
-          <div>Rating</div>
-          <div>Actions</div>
-        </div>
-        {reviews.map((r) => (
-          <div
-            key={r.id}
-            className="min-w-full grid grid-cols-6 gap-x-4 border-b p-2 items-center text-sm"
-          >
-            <div className="overflow-x-auto">
-              <div className="w-max">{r.id}</div>
-            </div>
-
-            {/* <div className="overflow-x-auto">
-              <div className="w-max">{r.serviceId}</div>
-            </div> */}
-            <div className="overflow-x-auto">
-              <div className="w-max">{r.bookingId}</div>
-            </div>
-            {/* <div className="overflow-x-auto">
-              <div className="w-max">{r.customerId}</div>
-            </div> */}
-            <div className="overflow-x-auto">
-              <div className="w-max">{r.rating}</div>
-            </div>
-            <div>
-              <Button variant="destructive" size="sm" onClick={() => handleDelete(r.id)}>
-                Delete
-              </Button>
-            </div>
-          </div>
-        ))}
+        <table className="min-w-full text-sm text-left">
+          <thead className="bg-gray-100 text-gray-700 font-semibold">
+            <tr>
+              <th className="px-4 py-2">ID</th>
+              <th className="px-4 py-2">Rating</th>
+              <th className="px-4 py-2">Comment</th>
+              <th className="px-4 py-2">Created At</th>
+              <th className="px-4 py-2">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {reviews.map((r) => (
+              <tr key={r.id} className="border-t">
+                <td className="px-4 py-2">{r.id}</td>
+                <td className="px-4 py-2">{r.rating}</td>
+                <td className="px-4 py-2 max-w-xs truncate" title={r.comment}>{r.comment}</td>
+                <td className="px-4 py-2">{new Date(r.createdAt).toLocaleString()}</td>
+                <td className="px-4 py-2 flex gap-2 flex-wrap">
+                  {mapReady && reviewServiceMap.hasOwnProperty(r.id) ? (
+                    <Link to={`/services/${reviewServiceMap[r.id]}#review-${r.id}`}>
+                      <Button variant="outline" size="sm">View</Button>
+                    </Link>
+                  ) : (
+                    <span className="text-xs text-gray-400">Resolving…</span>
+                  )}
+                  <Button variant="destructive" size="sm" onClick={() => handleDelete(r.id)}>
+                    Delete
+                  </Button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </section>
   );

@@ -2,6 +2,11 @@ import api from './api';
 import { urls } from './urls';
 import { BookingPayload, BookingStatus } from '../interfaces';
 
+export const getBookingById = async (bookingId: string) => {
+  const response = await api.get(urls.bookings.getById(bookingId));
+  return response.data;
+};
+
 export const bookService = async (serviceId: string, data: BookingPayload) => {
   const response = await api.post(urls.bookings.book(serviceId), data);
   return response.data;

@@ -9,6 +9,7 @@ export interface ServicePayload {
   name: string;
   description: string;
   price: number;
+  isValidated: boolean;
   category: ServiceCategory;
   emergencyAvailable: boolean;
 }

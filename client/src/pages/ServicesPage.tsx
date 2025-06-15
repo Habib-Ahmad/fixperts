@@ -27,14 +27,14 @@ const ServicesPage = () => {
   const fetchAdvanced = async () => {
     setLoading(true);
     try {
-      const data = await searchServices({
+       const data: Service[] = await searchServices({
         query,
         minPrice: minPrice ? Number(minPrice) : undefined,
         maxPrice: maxPrice ? Number(maxPrice) : undefined,
         emergency,
         category,
       });
-      setServices(data);
+      setServices(data.filter((s: Service) => s.validated));
     } catch (err) {
       toast.error(getErrorMessage(err) || 'Failed to perform advanced search');
     } finally {
@@ -45,8 +45,8 @@ const ServicesPage = () => {
   const fetchAll = async () => {
     setLoading(true);
     try {
-      const data = await getAllServices();
-      setServices(data);
+      const data: Service[] = await getAllServices();
+      setServices(data.filter((s: Service) => s.validated));
     } catch (err) {
       toast.error(getErrorMessage(err) || 'Failed to fetch services');
     } finally {
