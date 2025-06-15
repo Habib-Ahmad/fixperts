@@ -7,6 +7,7 @@ import {
   sendQuote,
   payForBooking as createPayment,
 } from '../api/bookings';
+import { getUserById } from '../api/users';
 import { Booking, BookingStatus, User } from '../interfaces';
 import {
   Tabs,
@@ -24,6 +25,9 @@ import { toast } from 'sonner';
 import { getErrorMessage } from '../utils';
 import { Link, useNavigate } from 'react-router-dom';
 
+interface BookingWithClient extends Booking {
+  client?: User;
+}
 const getStatusBadge = (status: BookingStatus) => {
   switch (status) {
     case 'PENDING':
@@ -47,7 +51,7 @@ const getStatusBadge = (status: BookingStatus) => {
 
 const MyBookingsPage = () => {
   const [customerBookings, setCustomerBookings] = useState<Booking[]>([]);
-  const [providerBookings, setProviderBookings] = useState<Booking[]>([]);
+  const [providerBookings, setProviderBookings] = useState<BookingWithClient[]>([]);
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(false);
   const [confirmModal, setConfirmModal] = useState<{
@@ -92,8 +96,19 @@ const MyBookingsPage = () => {
         ]);
 
         setCustomerBookings(customerData);
-        setProviderBookings(providerData);
+        const enrichedProviderBookings = await Promise.all(
+          providerData.map(async (booking: Booking) => {
+            try {
+              const client = await getUserById(booking.customerId);
 
+              return { ...booking, client };
+            } catch {
+              return booking;
+            }
+          })
+        );
+        setProviderBookings(enrichedProviderBookings);
+        console.log('Provider bookings:', enrichedProviderBookings);
         const allBookings = [...customerData, ...providerData];
         const reviewKeys = await Promise.all(
           allBookings.map((b) =>
@@ -268,7 +283,7 @@ const MyBookingsPage = () => {
     return <span className="text-muted-foreground text-sm">No actions</span>;
   };
 
-  const renderTable = (bookings: Booking[], isProviderView: boolean) => {
+  const renderTable = (bookings: BookingWithClient[], isProviderView: boolean) => {
     if (bookings.length === 0) {
       return (
         <p className="text-muted-foreground text-sm">
@@ -284,6 +299,7 @@ const MyBookingsPage = () => {
             <tr className="bg-gray-100 text-left text-sm text-muted-foreground">
               <th className="px-4 py-2">Service</th>
               <th className="px-4 py-2">Description</th>
+              {isProviderView && <th className="px-4 py-2">Client</th>}
               <th className="px-4 py-2">Date</th>
               <th className="px-4 py-2">Status</th>
               <th className="px-4 py-2">Actions</th>
@@ -298,7 +314,22 @@ const MyBookingsPage = () => {
                   </Link>
                 </td>
                 <td className="px-4 py-2">{b.description}</td>
+                {isProviderView && (
+                  <td className="px-4 py-2">
+                    {b.client ? (
+                      <Link
+                        to={`/profile/${b.client.id}`}
+                        className="text-blue-600 hover:underline"
+                      >
+                        {b.client.firstName} {b.client.lastName}
+                      </Link>
+                    ) : (
+                      <span className="text-muted-foreground">Unknown Client</span>
+                    )}
+                  </td>
+                )}
                 <td className="px-4 py-2">{new Date(b.bookingDate).toLocaleDateString()}</td>
+
                 <td className="px-4 py-2">{getStatusBadge(b.status)}</td>
                 <td className="px-4 py-2">{renderActions(b, isProviderView)}</td>
               </tr>
