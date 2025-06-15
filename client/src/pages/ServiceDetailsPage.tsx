@@ -1,19 +1,22 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { getServiceById } from '../api';
-import { Service } from '../interfaces';
+import { getServiceById, getUserById } from '../api';
+import { Service, User } from '../interfaces';
 import { Loader, Badge, Button, Modal, BookingForm } from '../components';
 import { AlertCircle, StarIcon, Clock, MessageSquare, CreditCard } from 'lucide-react';
 import { toast } from 'sonner';
 import { getErrorMessage } from '../utils';
+import { Link } from 'react-router-dom';
 
 const mediaBaseUrl = import.meta.env.VITE_MEDIA_BASE_URL;
 
 const ServiceDetailsPage = () => {
   const { id } = useParams<{ id: string }>();
   const [service, setService] = useState<Service | null>(null);
+  const [provider, setProvider] = useState<User | null>(null);
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const currentUser = JSON.parse(localStorage.getItem('user') || 'null');
 
   useEffect(() => {
     const fetchService = async () => {
@@ -22,6 +25,9 @@ const ServiceDetailsPage = () => {
       try {
         const result = await getServiceById(id);
         setService(result);
+
+        const providerInfo = await getUserById(result.providerId);
+        setProvider(providerInfo);
       } catch (error) {
         toast.error(getErrorMessage(error) || 'Failed to load service');
       } finally {
@@ -51,6 +57,26 @@ const ServiceDetailsPage = () => {
         <div className="w-full lg:w-1/2 space-y-5">
           <h1 className="text-3xl font-bold capitalize">{service.name}</h1>
 
+          {provider && (
+            <div className="flex items-center gap-3">
+              <img
+                src={
+                  provider.profilePictureUrl
+                    ? `http://localhost:8081${provider.profilePictureUrl}`
+                    : 'https://github.com/shadcn.png'
+                }
+                alt="Provider Avatar"
+                className="w-10 h-10 rounded-full object-cover border"
+              />
+              <Link
+                to={`/profile/${provider.id}`}
+                className="font-medium text-base text-foreground hover:underline"
+              >
+                {provider.firstName} {provider.lastName}
+              </Link>
+            </div>
+          )}
+
           <div className="flex flex-wrap items-center gap-4">
             <span className="text-xl text-primary font-semibold">${service.price}/hour</span>
 
@@ -75,26 +101,28 @@ const ServiceDetailsPage = () => {
 
           <div className="flex items-center text-sm text-muted-foreground gap-2">
             <Clock className="w-4 h-4" />
-            Avg. Response Time: <span className="font-medium text-foreground">15-30 mins</span>
+            Avg. Response Time: <span className="font-medium text-foreground">15–30 mins</span>
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-3 pt-4">
-            <Button
-              variant="default"
-              className="w-full sm:w-fit"
-              onClick={() => setShowModal(true)}
-            >
-              Book This Service
-            </Button>
-            <Modal open={showModal} onClose={() => setShowModal(false)} title="Book This Service">
-              <BookingForm service={service} />
-            </Modal>
+          {provider && currentUser?.id !== provider.id && (
+            <div className="flex flex-col sm:flex-row gap-3 pt-4">
+              <Button
+                variant="default"
+                className="w-full sm:w-fit"
+                onClick={() => setShowModal(true)}
+              >
+                Book This Service
+              </Button>
+              <Modal open={showModal} onClose={() => setShowModal(false)} title="Book This Service">
+                <BookingForm service={service} />
+              </Modal>
 
-            <Button variant="outline" className="w-full sm:w-fit">
-              <MessageSquare className="w-4 h-4 mr-2" />
-              Message Provider
-            </Button>
-          </div>
+              <Button variant="outline" className="w-full sm:w-fit">
+                <MessageSquare className="w-4 h-4 mr-2" />
+                Message Provider
+              </Button>
+            </div>
+          )}
         </div>
       </div>
 
@@ -132,7 +160,6 @@ const ServiceDetailsPage = () => {
             <span className="font-medium text-foreground">Card, Bank Transfer, and Cash</span>
           </div>
         </section>
-
         <section>
           <h2 className="text-xl font-semibold mb-2">Need Help?</h2>
           <p className="text-sm text-muted-foreground">

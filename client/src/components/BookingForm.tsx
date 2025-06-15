@@ -32,12 +32,13 @@ const BookingForm = ({ service }: Props) => {
       initialValues={{
         bookingDate: '',
         description: '',
-        price: service.price,
+        serviceId: service.id,
+        serviceName: service.name,
+        price: 0,
       }}
       validationSchema={Yup.object({
         bookingDate: Yup.string().required('Select a date'),
         description: Yup.string().required('Please describe your need'),
-        price: Yup.number().min(0).required(),
       })}
       onSubmit={handleBooking}
     >
@@ -58,11 +59,6 @@ const BookingForm = ({ service }: Props) => {
               className="w-full border p-2 rounded"
             />
             <ErrorMessage name="description" component="div" className="text-sm text-red-500" />
-          </div>
-
-          <div>
-            <label className="block font-medium mb-1">Price ($)</label>
-            <Field name="price" type="number" className="w-full border p-2 rounded" />
           </div>
 
           <Button type="submit" disabled={isSubmitting} className="w-full">

@@ -6,7 +6,6 @@ import com.example.fixperts.model.Review;
 import com.example.fixperts.model.User;
 import com.example.fixperts.service.BookingService;
 import com.example.fixperts.service.ReviewService;
-import com.example.fixperts.service.ServiceService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -27,56 +26,89 @@ public class ReviewController {
         this.reviewService = reviewService;
     }
 
-    // Create review (only customer, only after booking)
+    /**
+     * Create a review (by customer or provider) after booking is completed.
+     */
     @SecurityRequirement(name = "bearerAuth")
     @PostMapping("/{bookingId}")
-    public ResponseEntity<Review> create(
-            @AuthenticationPrincipal com.example.fixperts.model.User user,
+    public ResponseEntity<Review> createReview(
+            @AuthenticationPrincipal User user,
             @PathVariable String bookingId,
             @RequestBody ReviewCreateRequest request
     ) {
         Booking booking = bookingService.getById(bookingId);
 
-        if (!booking.getCustomerId().equals(user.getId())) {
-            return ResponseEntity.status(403).build();
-        }
-
-        if (booking.getStatus() != Booking.BookingStatus.COMPLETED) {
+        if (booking == null || booking.getStatus() != Booking.BookingStatus.PAID) {
             return ResponseEntity.badRequest().build();
         }
 
         Review review = new Review();
-        review.setCustomerId(user.getId());
         review.setBookingId(bookingId);
-        review.setServiceId(booking.getServiceId());
         review.setRating(request.getRating());
         review.setComment(request.getComment());
         review.setCreatedAt(LocalDateTime.now());
+        review.setAuthorId(user.getId());
+
+        if (user.getId().equals(booking.getCustomerId())) {
+            // Customer reviewing provider/service
+            review.setTargetId(booking.getServiceId());
+            review.setTargetType("SERVICE");
+        } else if (user.getId().equals(booking.getProviderId())) {
+            // Provider reviewing customer
+            review.setTargetId(booking.getCustomerId());
+            review.setTargetType("CLIENT");
+        } else {
+            return ResponseEntity.status(403).build(); // Neither party in booking
+        }
 
         Review saved = reviewService.createReview(review);
         return ResponseEntity.ok(saved);
     }
-    // Get all reviews for a service
+
+    @GetMapping("/by-booking-and-author")
+    public ResponseEntity<Review> getByBookingAndAuthor(
+            @RequestParam String bookingId,
+            @RequestParam String authorId
+    ) {
+        return reviewService.getByBookingAndAuthor(bookingId, authorId)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    /**
+     * Get all reviews for a specific service.
+     */
     @GetMapping("/service/{serviceId}")
-    public ResponseEntity<List<Review>> getByService(@PathVariable String serviceId) {
+    public ResponseEntity<List<Review>> getReviewsByService(@PathVariable String serviceId) {
         return ResponseEntity.ok(reviewService.getReviewsForService(serviceId));
     }
 
-    //delete a review if the user is the owner of the review
+    /**
+     * Get all reviews written about a specific client (by providers).
+     */
+    @GetMapping("/client/{clientId}")
+    public ResponseEntity<List<Review>> getReviewsByClient(@PathVariable String clientId) {
+        return ResponseEntity.ok(reviewService.getReviewsForClient(clientId));
+    }
+
+    /**
+     * Delete a review (only if the user is the author).
+     */
     @SecurityRequirement(name = "bearerAuth")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteReview(
-            @AuthenticationPrincipal com.example.fixperts.model.User user,
+            @AuthenticationPrincipal User user,
             @PathVariable String id
     ) {
         Review review = reviewService.getById(id);
         if (review == null) {
             return ResponseEntity.notFound().build();
         }
-        if (!review.getCustomerId().equals(user.getId())) {
+        if (!review.getAuthorId().equals(user.getId())) {
             return ResponseEntity.status(403).build();
         }
         reviewService.deleteReview(id);
         return ResponseEntity.noContent().build();
     }
+
 }
