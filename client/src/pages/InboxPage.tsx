@@ -113,7 +113,7 @@ const InboxPage = () => {
                   <div
                     className={`flex items-center justify-between p-3 cursor-pointer transition-colors rounded-md ${
                       activeConversation?.id === conversation.id
-                        ? 'bg-purple-100'
+                        ? 'bg-green-100'
                         : 'hover:bg-gray-100'
                     }`}
                     onClick={() => handleSelectConversation(conversation)}
@@ -141,7 +141,7 @@ const InboxPage = () => {
                         {formatConversationTime(conversation.lastMessageTime)}
                       </div>
                       {conversation.unreadCount > 0 && (
-                        <div className="bg-purple-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs mt-1">
+                        <div className="bg-green-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs mt-1">
                           {conversation.unreadCount}
                         </div>
                       )}
@@ -188,14 +188,14 @@ const InboxPage = () => {
                         <div
                           className={`max-w-[70%] p-3 rounded-lg ${
                             isCurrentUser
-                              ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white'
+                              ? 'bg-gradient-to-r from-green-600 to-lime-500 text-white'
                               : 'bg-gray-100'
                           }`}
                         >
                           <div>{message.content}</div>
                           <div
                             className={`text-xs mt-1 ${
-                              isCurrentUser ? 'text-purple-100' : 'text-gray-500'
+                              isCurrentUser ? 'text-green-100' : 'text-gray-500'
                             }`}
                           >
                             {new Date(message.timestamp).toLocaleTimeString()}
@@ -226,7 +226,7 @@ const InboxPage = () => {
                   <Button
                     onClick={handleSendMessage}
                     disabled={!newMessage.trim()}
-                    className="bg-gradient-to-r from-purple-600 to-blue-600"
+                    className="bg-gradient-to-r from-green-600 to-lime-500"
                   >
                     <Send size={16} />
                   </Button>
