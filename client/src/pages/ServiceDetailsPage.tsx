@@ -6,13 +6,8 @@ import { Loader, Badge, Button, Modal, BookingForm } from '../components';
 import { AlertCircle, StarIcon, Clock, MessageSquare, CreditCard } from 'lucide-react';
 import { toast } from 'sonner';
 import { getErrorMessage } from '../utils';
-import { Link } from 'react-router-dom';
-import { getReviewsForService } from '../api/reviews';
-import { Review } from '../interfaces';
-
 
 const mediaBaseUrl = import.meta.env.VITE_MEDIA_BASE_URL;
-
 
 const ServiceDetailsPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -22,8 +17,6 @@ const ServiceDetailsPage = () => {
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const currentUser = JSON.parse(localStorage.getItem('user') || 'null');
-  const [reviews, setReviews] = useState<Review[]>([]);
-
 
   useEffect(() => {
     const fetchService = async () => {
@@ -34,7 +27,6 @@ const ServiceDetailsPage = () => {
         setService(result);
         const reviewData = await getReviewsForService(result.id);
         setReviews(reviewData);
-
 
         const providerInfo = await getUserById(result.providerId);
         setProvider(providerInfo);
