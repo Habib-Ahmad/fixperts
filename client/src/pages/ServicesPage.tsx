@@ -27,7 +27,7 @@ const ServicesPage = () => {
   const fetchAdvanced = async () => {
     setLoading(true);
     try {
-       const data: Service[] = await searchServices({
+      const data: Service[] = await searchServices({
         query,
         minPrice: minPrice ? Number(minPrice) : undefined,
         maxPrice: maxPrice ? Number(maxPrice) : undefined,
@@ -73,11 +73,15 @@ const ServicesPage = () => {
       <h1 className="text-2xl font-bold mb-4">Services</h1>
 
       <div className="space-y-4 mb-6 max-w-3xl">
-        <Input
-          placeholder="Search by name, category or description..."
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-        />
+        <div className="flex gap-2">
+          <Input
+            placeholder="Search by name, category or description..."
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            className="flex-grow"
+          />
+          <Button onClick={handleSearch}>Search</Button>
+        </div>
 
         <div className="flex items-center justify-between">
           <label className="font-medium">Enable advanced filters</label>
@@ -116,10 +120,6 @@ const ServicesPage = () => {
             </div>
           </div>
         )}
-
-        <Button className="w-full md:w-fit" onClick={handleSearch}>
-          Search
-        </Button>
       </div>
 
       {services.length === 0 && !loading ? (

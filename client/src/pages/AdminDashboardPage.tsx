@@ -64,23 +64,27 @@ const AdminDashboardPage = () => {
       </div>
 
       {/* Admin Links */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        <Link to="/admin/reviews" className="p-4 border rounded hover:shadow-lg">
-          <h2 className="text-xl font-semibold mb-2">Manage Reviews</h2>
-          <p>View and delete user-submitted reviews.</p>
-        </Link>
-        <Link to="/admin/users" className="p-4 border rounded hover:shadow-lg">
-          <h2 className="text-xl font-semibold mb-2">All Users</h2>
-          <p>View and manage all users and ban accounts.</p>
-        </Link>
-        <Link to="/admin/banned-users" className="p-4 border rounded hover:shadow-lg">
-          <h2 className="text-xl font-semibold mb-2">Banned Users</h2>
-          <p>View and unban restricted users.</p>
-        </Link>
-        <Link to="/admin/pending-services" className="p-4 border rounded hover:shadow-lg">
-          <h2 className="text-xl font-semibold mb-2">Pending Services</h2>
-          <p>Approve or reject new service listings.</p>
-        </Link>
+      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <AdminTabLink
+          to="/admin/reviews"
+          title="Manage Reviews"
+          description="View and delete user-submitted reviews."
+        />
+        <AdminTabLink
+          to="/admin/users"
+          title="All Users"
+          description="View and manage all users and ban accounts."
+        />
+        <AdminTabLink
+          to="/admin/banned-users"
+          title="Banned Users"
+          description="View and unban restricted users."
+        />
+        <AdminTabLink
+          to="/admin/pending-services"
+          title="Pending Services"
+          description="Approve or reject new service listings."
+        />
       </div>
     </section>
   );
@@ -93,6 +97,26 @@ const StatCard = ({ title, value }: { title: string; value: number }) => (
       <div className="text-2xl font-bold">{value}</div>
     </CardContent>
   </Card>
+);
+const AdminTabLink = ({
+  to,
+  title,
+  description,
+}: {
+  to: string;
+  title: string;
+  description: string;
+}) => (
+  <Link
+    to={to}
+    className="p-6 rounded-2xl bg-white border border-gray-200 hover:shadow-lg transition-shadow flex flex-col justify-between h-full"
+  >
+    <div className="flex-1">
+      <h3 className="text-lg font-semibold mb-1 text-blue-700">{title}</h3>
+      <p className="text-sm text-gray-500">{description}</p>
+    </div>
+    <div className="mt-4 text-sm font-medium text-blue-600 hover:underline">Go →</div>
+  </Link>
 );
 
 export default AdminDashboardPage;

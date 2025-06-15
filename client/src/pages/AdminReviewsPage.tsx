@@ -24,20 +24,20 @@ export default function AdminReviewsPage() {
 
       const map: Record<string, string> = {};
       await Promise.all(
-        data.map(async (r) => {
-          try {
-            const booking: Booking = await getBookingById(r.bookingId);
-            console.log('Resolved serviceId for review', r.id, '→', booking.serviceId);
-            map[r.id] = booking.serviceId;
-          } catch (err) {
-            console.error(`Failed to get booking for review ${r.id}:`, err);
-          }
-        })
+        data
+          .filter((r) => r.targetType === 'SERVICE')
+          .map(async (r) => {
+            try {
+              const booking: Booking = await getBookingById(r.bookingId);
+              map[r.id] = booking.serviceId;
+            } catch (err) {
+              console.error(`Failed to get booking for review ${r.id}:`, err);
+            }
+          })
       );
 
       setReviewServiceMap(map);
       setMapReady(true);
-      
     } catch {
       toast.error('Could not load reviews');
     } finally {
@@ -56,11 +56,12 @@ export default function AdminReviewsPage() {
     }
   };
 
-  if (loading) return <p>Loading reviews…</p>;
+  const serviceReviews = reviews.filter((r) => r.targetType === 'SERVICE');
+  const clientReviews = reviews.filter((r) => r.targetType === 'CLIENT');
 
-  return (
-    <section className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">All Reviews</h1>
+  const renderReviewTable = (title: string, list: Review[], isClient: boolean) => (
+    <section className="mb-8">
+      <h2 className="text-xl font-semibold mb-2">{title}</h2>
       <div className="overflow-x-auto rounded-lg shadow">
         <table className="min-w-full text-sm text-left">
           <thead className="bg-gray-100 text-gray-700 font-semibold">
@@ -73,16 +74,26 @@ export default function AdminReviewsPage() {
             </tr>
           </thead>
           <tbody>
-            {reviews.map((r) => (
+            {list.map((r) => (
               <tr key={r.id} className="border-t">
                 <td className="px-4 py-2">{r.id}</td>
                 <td className="px-4 py-2">{r.rating}</td>
-                <td className="px-4 py-2 max-w-xs truncate" title={r.comment}>{r.comment}</td>
+                <td className="px-4 py-2 max-w-xs truncate" title={r.comment}>
+                  {r.comment}
+                </td>
                 <td className="px-4 py-2">{new Date(r.createdAt).toLocaleString()}</td>
                 <td className="px-4 py-2 flex gap-2 flex-wrap">
-                  {mapReady && reviewServiceMap.hasOwnProperty(r.id) ? (
+                  {isClient ? (
+                    <Link to={`/profile/${r.targetId}`}>
+                      <Button variant="outline" size="sm">
+                        View
+                      </Button>
+                    </Link>
+                  ) : mapReady && reviewServiceMap.hasOwnProperty(r.id) ? (
                     <Link to={`/services/${reviewServiceMap[r.id]}#review-${r.id}`}>
-                      <Button variant="outline" size="sm">View</Button>
+                      <Button variant="outline" size="sm">
+                        View
+                      </Button>
                     </Link>
                   ) : (
                     <span className="text-xs text-gray-400">Resolving…</span>
@@ -96,6 +107,16 @@ export default function AdminReviewsPage() {
           </tbody>
         </table>
       </div>
+    </section>
+  );
+
+  if (loading) return <p>Loading reviews…</p>;
+
+  return (
+    <section className="container mx-auto p-4">
+      <h1 className="text-2xl font-bold mb-4">All Reviews</h1>
+      {renderReviewTable('Service Reviews', serviceReviews, false)}
+      {renderReviewTable('Client Reviews', clientReviews, true)}
     </section>
   );
 }
