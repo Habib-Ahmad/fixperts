@@ -97,6 +97,7 @@ const Navbar = () => {
     { name: 'Services', path: '/services' },
     { name: 'Bookings', path: '/bookings' },
     { name: 'Inbox', path: '/inbox' },
+    { name: 'Schedule', path: '/schedule' },
   ];
 
   const isProvider = services.length > 0;

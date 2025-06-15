@@ -16,6 +16,7 @@ import AdminBannedUsersPage from './pages/AdminBannedUsers';
 import AdminServicesPage from './pages/AdminServicesPage';
 import UserProfilePage from './pages/UserProfile';
 import path from 'path';
+import SchedulePage from './pages/SchedulePage';
 
 const routes = [
   {
@@ -28,6 +29,7 @@ const routes = [
       { path: '/services', element: <ServicesPage /> },
       { path: '/services/:id', element: <ServiceDetailsPage /> },
       { path: '/services/create', element: <CreateServicePage /> },
+      { path: '/schedule', element: <SchedulePage /> }, // Assuming this is a typo and should be CreateServicePage
       { path: '/my-services', element: <MyServicesPage /> },
       { path: '/my/services/:id', element: <MyServiceDetailsPage /> },
       { path: '/bookings', element: <BookingsPage /> },

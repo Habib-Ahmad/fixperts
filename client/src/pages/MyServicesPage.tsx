@@ -41,7 +41,7 @@ const MyServicesPage = () => {
           return;
         }
         const parsedUser = JSON.parse(user);
-        // print the parsed user id 
+        // print the parsed user id
         console.log('Parsed User ID:', parsedUser.id);
         const data = await getServicesByProviderId(parsedUser.id);
         setServices(data);
@@ -124,7 +124,7 @@ const MyServicesPage = () => {
                     <Button
                       size="sm"
                       variant="outline"
-                      onClick={() => navigate(`/my/services/${service.id}`)}
+                      onClick={() => navigate(`/services/${service.id}`)}
                     >
                       <Eye className="w-4 h-4" />
                     </Button>
