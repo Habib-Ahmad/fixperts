@@ -14,6 +14,7 @@ import SignupPage from './pages/SignupPage';
 import AdminReviewsPage from './pages/AdminReviewsPage';
 import AdminBannedUsersPage from './pages/AdminBannedUsers';
 import AdminServicesPage from './pages/AdminServicesPage';
+import InboxPage from './pages/InboxPage';
 
 const routes = [
   {
@@ -31,10 +32,10 @@ const routes = [
       { path: '/bookings', element: <BookingsPage /> },
       { path: '/profile', element: <ProfilePage /> },
       { path: '/about', element: <AboutUsPage /> },
+      { path: '/inbox', element: <InboxPage /> },
       { path: '/admin/reviews', element: <AdminReviewsPage /> },
       { path: '/admin/banned-users', element: <AdminBannedUsersPage /> },
       { path: '/admin/pending-services', element: <AdminServicesPage /> },
-
     ],
   },
 ];

@@ -29,17 +29,25 @@ export const urls = {
     update: (id: string) => `/bookings/update/${id}`,
     delete: (id: string) => `/bookings/delete/${id}`,
   },
-    admin: {
+  admin: {
     getAllUsers: '/admin/users',
-    getUserById:       (id: string) => `/admin/users/${id}`,
-    updateUser:        (id: string) => `/admin/users/${id}`,
-    deleteUser:        (id: string) => `/admin/users/${id}`,
+    getUserById: (id: string) => `/admin/users/${id}`,
+    updateUser: (id: string) => `/admin/users/${id}`,
+    deleteUser: (id: string) => `/admin/users/${id}`,
 
     getUnvalidatedServices: '/admin/services',
-    approveService:     (id: string) => `/admin/services/${id}/approve`,
-    rejectService:      (id: string) => `/admin/services/${id}/reject`,
+    approveService: (id: string) => `/admin/services/${id}/approve`,
+    rejectService: (id: string) => `/admin/services/${id}/reject`,
 
-    getAllReviews:      '/admin/reviews',
-    deleteReview:       (id: string) => `/admin/reviews/${id}`,
+    getAllReviews: '/admin/reviews',
+    deleteReview: (id: string) => `/admin/reviews/${id}`,
+  },
+  conversations: {
+    getOrCreate: '/conversations/getOrCreate',
+    getByUserId: (userId: string) => `/conversations/${userId}`,
+    getMessages: (conversationId: string) => `/messages/${conversationId}`,
+    sendMessage: '/messages/send',
+    markAsRead: (conversationId: string, userId: string) =>
+      `/messages/mark-read?conversationId=${conversationId}&userId=${userId}`,
   },
 };

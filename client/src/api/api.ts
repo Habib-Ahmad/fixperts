@@ -1,10 +1,10 @@
 import axios from 'axios';
 
+export const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+export const MEDIA_BASE_URL = import.meta.env.VITE_MEDIA_BASE_URL;
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3000/api',
-  // headers: {
-  //   'Content-Type': 'application/json',
-  // },
+  baseURL: BASE_URL,
 });
 
 api.interceptors.request.use(

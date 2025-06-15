@@ -9,3 +9,5 @@ export * from './badge';
 export * from './dialog';
 export * from './tabs';
 export * from './switch';
+export * from './scroll-area';
+export * from './separator';

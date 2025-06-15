@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { getServiceById } from '../api';
-import { Service } from '../interfaces';
+import { useNavigate, useParams } from 'react-router-dom';
+import { getOrCreateConversation, getServiceById } from '../api';
+import { Service, User } from '../interfaces';
 import { Loader, Badge, Button, Modal, BookingForm } from '../components';
 import { AlertCircle, StarIcon, Clock, MessageSquare, CreditCard } from 'lucide-react';
 import { toast } from 'sonner';
@@ -14,6 +14,8 @@ const ServiceDetailsPage = () => {
   const [service, setService] = useState<Service | null>(null);
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchService = async () => {
@@ -31,6 +33,26 @@ const ServiceDetailsPage = () => {
 
     fetchService();
   }, [id]);
+
+  const handleMessageProvider = async () => {
+    try {
+      const user = localStorage.getItem('user');
+      if (!user) {
+        toast.error('You must be logged in to message the provider');
+        return;
+      }
+      const parsedUser: User = JSON.parse(user);
+
+      if (!service?.providerId) {
+        toast.error('Provider information is missing for this service.');
+        return;
+      }
+      const conversation = await getOrCreateConversation(parsedUser.id, service.providerId);
+      navigate(`/inbox?conversationId=${conversation.id}`);
+    } catch (err) {
+      toast.error(getErrorMessage(err) || 'Failed to start conversation');
+    }
+  };
 
   if (loading) return <Loader />;
   if (!service) return <p className="text-center text-muted-foreground">Service not found.</p>;
@@ -90,7 +112,7 @@ const ServiceDetailsPage = () => {
               <BookingForm service={service} />
             </Modal>
 
-            <Button variant="outline" className="w-full sm:w-fit">
+            <Button variant="outline" className="w-full sm:w-fit" onClick={handleMessageProvider}>
               <MessageSquare className="w-4 h-4 mr-2" />
               Message Provider
             </Button>
