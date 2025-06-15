@@ -30,6 +30,8 @@ public interface ServiceRepository extends MongoRepository<ServiceModel, String>
 
     ServiceModel save(ServiceModel service);
     void deleteById(String id);
+    long countByValidatedTrue();
+
 
 
 }

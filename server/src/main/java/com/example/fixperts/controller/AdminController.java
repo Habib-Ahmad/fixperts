@@ -10,6 +10,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/admin")
@@ -108,6 +109,31 @@ public class AdminController {
         adminService.deleteReview(reviewId);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/stats/overview")
+    public ResponseEntity<Map<String, Object>> getPlatformOverview(@AuthenticationPrincipal User admin) {
+        if (admin.getRole() != User.Role.ADMIN) {
+            return ResponseEntity.status(403).build();
+        }
+        Map<String, Object> stats = adminService.getPlatformOverviewStats();
+        return ResponseEntity.ok(stats);
+    }
+
+    @GetMapping("/stats/bookings-by-day")
+    public ResponseEntity<Map<String, Long>> getBookingsByDay(
+            @AuthenticationPrincipal User admin,
+            @RequestParam(defaultValue = "30") int days
+    ) {
+        if (admin.getRole() != User.Role.ADMIN) {
+            return ResponseEntity.status(403).build();
+        }
+        Map<String, Long> stats = adminService.getBookingCountPerDay(days);
+        return ResponseEntity.ok(stats);
+    }
+
+
+
+
 
 
 }

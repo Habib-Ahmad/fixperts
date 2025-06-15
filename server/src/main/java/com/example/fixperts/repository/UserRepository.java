@@ -13,4 +13,6 @@ public interface UserRepository extends MongoRepository<User, String> {
 
 
     List<User> findByLocationNear(Point location, Distance distance);
+    long countByIsBannedTrue();
+
 }
