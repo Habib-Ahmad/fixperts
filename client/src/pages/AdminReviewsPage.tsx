@@ -30,7 +30,7 @@ export default function AdminReviewsPage() {
     try {
       await deleteReview(id);
       toast.success('Review deleted');
-      setReviews(r => r.filter(x => x.id !== id));
+      setReviews((r) => r.filter((x) => x.id !== id));
     } catch {
       toast.error('Failed to delete');
     }
@@ -50,30 +50,29 @@ export default function AdminReviewsPage() {
           <div>Rating</div>
           <div>Actions</div>
         </div>
-        {reviews.map(r => (
-          <div key={r.id} className="min-w-full grid grid-cols-6 gap-x-4 border-b p-2 items-center text-sm">
+        {reviews.map((r) => (
+          <div
+            key={r.id}
+            className="min-w-full grid grid-cols-6 gap-x-4 border-b p-2 items-center text-sm"
+          >
             <div className="overflow-x-auto">
               <div className="w-max">{r.id}</div>
             </div>
-            
-            <div className="overflow-x-auto">
+
+            {/* <div className="overflow-x-auto">
               <div className="w-max">{r.serviceId}</div>
-            </div>
+            </div> */}
             <div className="overflow-x-auto">
               <div className="w-max">{r.bookingId}</div>
             </div>
-            <div className="overflow-x-auto">
+            {/* <div className="overflow-x-auto">
               <div className="w-max">{r.customerId}</div>
-            </div>
+            </div> */}
             <div className="overflow-x-auto">
               <div className="w-max">{r.rating}</div>
             </div>
             <div>
-              <Button
-                variant="destructive"
-                size="sm"
-                onClick={() => handleDelete(r.id)}
-              >
+              <Button variant="destructive" size="sm" onClick={() => handleDelete(r.id)}>
                 Delete
               </Button>
             </div>

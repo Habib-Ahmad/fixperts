@@ -21,3 +21,13 @@ export const updateBookingStatus = async (bookingId: string, status: BookingStat
   const response = await api.put(urls.bookings.updateStatus(bookingId, status));
   return response.data;
 };
+
+export const sendQuote = async (bookingId: string, price: number) => {
+  const response = await api.post(urls.bookings.sendQuote(bookingId, price));
+  return response.data;
+};
+
+export const payForBooking = async (bookingId: string) => {
+  const response = await api.post(urls.bookings.pay(bookingId));
+  return response.data;
+};

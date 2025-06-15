@@ -11,9 +11,11 @@ public class Review {
     @Id
     private String id;
 
-    private String serviceId;
-    private String bookingId;     // To ensure only once per booking
-    private String customerId;
+    private String bookingId;     // Ensure one review per author per booking
+
+    private String authorId;      // Who wrote the review (client or provider)
+    private String targetId;      // Who/what is being reviewed (service or client)
+    private String targetType;    // "SERVICE" or "CLIENT"
 
     private int rating;           // 1 to 5
     private String comment;
@@ -22,28 +24,34 @@ public class Review {
 
     public Review() {}
 
-    public Review(String serviceId, String bookingId, String customerId, int rating, String comment) {
-        this.serviceId = serviceId;
+    public Review(String serviceId, String bookingId, String authorId, String targetId, String targetType, int rating, String comment) {
         this.bookingId = bookingId;
-        this.customerId = customerId;
+        this.authorId = authorId;
+        this.targetId = targetId;
+        this.targetType = targetType;
         this.rating = rating;
         this.comment = comment;
         this.createdAt = LocalDateTime.now();
     }
 
-    // Getters and setters...
+    // Getters and Setters
 
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
 
-    public String getServiceId() { return serviceId; }
-    public void setServiceId(String serviceId) { this.serviceId = serviceId; }
+
 
     public String getBookingId() { return bookingId; }
     public void setBookingId(String bookingId) { this.bookingId = bookingId; }
 
-    public String getCustomerId() { return customerId; }
-    public void setCustomerId(String customerId) { this.customerId = customerId; }
+    public String getAuthorId() { return authorId; }
+    public void setAuthorId(String authorId) { this.authorId = authorId; }
+
+    public String getTargetId() { return targetId; }
+    public void setTargetId(String targetId) { this.targetId = targetId; }
+
+    public String getTargetType() { return targetType; }
+    public void setTargetType(String targetType) { this.targetType = targetType; }
 
     public int getRating() { return rating; }
     public void setRating(int rating) { this.rating = rating; }

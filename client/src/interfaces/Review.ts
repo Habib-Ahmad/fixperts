@@ -1,9 +1,12 @@
 export interface Review {
   id: string;
-  serviceId: string;
   bookingId: string;
-  customerId: string;
   rating: number;
   comment: string;
-  createdAt: string;  // ISO date string
+  createdAt: string; // ISO date string
+}
+export interface ReviewPayload {
+  bookingId: string;
+  rating: number;
+  comment: string;
 }

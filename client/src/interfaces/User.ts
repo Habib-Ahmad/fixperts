@@ -14,10 +14,8 @@ export interface SignupPayload {
   email: string;
   password: string;
   role: string;
-  location: {
-    x: number;
-    y: number;
-  };
+  latitude: number;
+  longitude: number;
 }
 
 export interface LoginPayload {

@@ -1,4 +1,6 @@
 export interface BookingPayload {
+  serviceId: string;
+  serviceName: string;
   bookingDate: string;
   description: string;
   price: number;
@@ -18,5 +20,7 @@ export const bookingStatuses = {
   COMPLETED: 'COMPLETED',
   CANCELLED: 'CANCELLED',
   REJECTED: 'REJECTED',
+  QUOTED: 'QUOTED',
+  PAID: 'PAID',
 } as const;
 export type BookingStatus = (typeof bookingStatuses)[keyof typeof bookingStatuses];
