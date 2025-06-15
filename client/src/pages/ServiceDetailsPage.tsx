@@ -6,13 +6,8 @@ import { Loader, Badge, Button, Modal, BookingForm } from '../components';
 import { AlertCircle, StarIcon, Clock, MessageSquare, CreditCard } from 'lucide-react';
 import { toast } from 'sonner';
 import { getErrorMessage } from '../utils';
-import { Link } from 'react-router-dom';
-import { getReviewsForService } from '../api/reviews';
-import { Review } from '../interfaces';
-
 
 const mediaBaseUrl = import.meta.env.VITE_MEDIA_BASE_URL;
-
 
 const ServiceDetailsPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -22,8 +17,6 @@ const ServiceDetailsPage = () => {
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const currentUser = JSON.parse(localStorage.getItem('user') || 'null');
-  const [reviews, setReviews] = useState<Review[]>([]);
-
 
   useEffect(() => {
     const fetchService = async () => {
@@ -34,7 +27,6 @@ const ServiceDetailsPage = () => {
         setService(result);
         const reviewData = await getReviewsForService(result.id);
         setReviews(reviewData);
-
 
         const providerInfo = await getUserById(result.providerId);
         setProvider(providerInfo);
@@ -165,30 +157,6 @@ const ServiceDetailsPage = () => {
             </div>
           </section>
         )}
-        
-        {reviews.length > 0 && (
-          <section>
-            <h2 className="text-xl font-semibold mb-2">Customer Reviews</h2>
-            <div className="space-y-4">
-              {reviews.map((r) => (
-                <div
-                  key={r.id}
-                  className="border rounded-md p-4 bg-muted text-muted-foreground hover:bg-background hover:text-foreground transition"
-                >
-                  <div className="flex items-center gap-2 mb-2">
-                    <StarIcon className="w-4 h-4 text-yellow-500" />
-                    <span className="font-semibold">{r.rating} / 5</span>
-                    <span className="text-xs text-gray-500 ml-auto">
-                      {new Date(r.createdAt).toLocaleDateString()}
-                    </span>
-                  </div>
-                  <p className="text-sm text-foreground">{r.comment}</p>
-                </div>
-              ))}
-            </div>
-          </section>
-        )}
-
 
         <section>
           <h2 className="text-xl font-semibold mb-2">What to Expect</h2>
