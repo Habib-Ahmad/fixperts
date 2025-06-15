@@ -19,7 +19,7 @@ export default function AdminBannedUsersPage() {
     try {
       const all = await getAllUsers();
       console.log('Fetched users:', all);
-      setUsers(all.filter(u => u.isBanned));
+      setUsers(all.filter((u) => u.isBanned));
     } catch (err) {
       console.error(err); // 👈 catch actual error
       toast.error('Failed to load users');
@@ -28,12 +28,11 @@ export default function AdminBannedUsersPage() {
     }
   };
 
-
   const handleUnban = async (userId: string) => {
     try {
       await unbanUser(userId);
       toast.success('User unbanned');
-      setUsers(prev => prev.filter(u => u.id !== userId));
+      setUsers((prev) => prev.filter((u) => u.id !== userId));
     } catch {
       toast.error('Failed to unban user');
     }
@@ -53,7 +52,7 @@ export default function AdminBannedUsersPage() {
           <div>Role</div>
           <div>Actions</div>
         </div>
-        {users.map(user => (
+        {users.map((user) => (
           <div
             key={user.id}
             className="min-w-full grid grid-cols-6 gap-x-4 border-b p-2 items-center text-sm"
@@ -66,11 +65,7 @@ export default function AdminBannedUsersPage() {
             <div>{user.email}</div>
             <div>{user.role}</div>
             <div className="flex gap-2">
-              <Button
-                variant="destructive"
-                size="sm"
-                onClick={() => handleUnban(user.id)}
-              >
+              <Button variant="destructive" size="sm" onClick={() => handleUnban(user.id)}>
                 Unban
               </Button>
               <Link to={`/profile/${user.id}`}>
@@ -82,9 +77,7 @@ export default function AdminBannedUsersPage() {
           </div>
         ))}
         {!users.length && (
-          <div className="p-4 text-center text-gray-600">
-            No banned users found.
-          </div>
+          <div className="p-4 text-center text-gray-600">No banned users found.</div>
         )}
       </div>
     </section>

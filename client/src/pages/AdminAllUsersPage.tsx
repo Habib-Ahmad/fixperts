@@ -26,21 +26,20 @@ export default function AdminAllUsersPage() {
     }
   };
 
-    const handleToggleBan = async (user: User) => {
+  const handleToggleBan = async (user: User) => {
     try {
-        if (user.isBanned) {
+      if (user.isBanned) {
         await unbanUser(user.id);
         toast.success('User unbanned');
-        } else {
+      } else {
         await banUser(user.id);
         toast.success('User banned');
-        }
-        fetchUsers();
+      }
+      fetchUsers();
     } catch {
-        toast.error('Failed to update user ban status');
+      toast.error('Failed to update user ban status');
     }
-    };
-
+  };
 
   if (loading) return <p>Loading…</p>;
 
@@ -57,12 +56,14 @@ export default function AdminAllUsersPage() {
           <div>Status</div>
           <div>Actions</div>
         </div>
-        {users.map(user => (
+        {users.map((user) => (
           <div
             key={user.id}
             className="min-w-full grid grid-cols-7 gap-x-4 border-b p-2 items-center text-sm"
           >
-            <div className="overflow-x-auto"><div className="w-max">{user.id}</div></div>
+            <div className="overflow-x-auto">
+              <div className="w-max">{user.id}</div>
+            </div>
             <div>{user.firstName}</div>
             <div>{user.lastName}</div>
             <div>{user.email}</div>
@@ -70,7 +71,9 @@ export default function AdminAllUsersPage() {
             <div>{user.isBanned ? 'Banned' : 'Active'}</div>
             <div className="flex gap-2">
               <Link to={`/profile/${user.id}`}>
-                <Button variant="outline" size="sm">View</Button>
+                <Button variant="outline" size="sm">
+                  View
+                </Button>
               </Link>
               <Button
                 variant={user.isBanned ? 'default' : 'destructive'}
