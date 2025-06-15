@@ -45,6 +45,7 @@ public class ServiceService {
         existing.setPrice(updated.getPrice());
         existing.setCategory(updated.getCategory());
         existing.setEmergencyAvailable(updated.isEmergencyAvailable());
+        existing.setAverageRating(updated.getAverageRating()); // ✅ THIS LINE IS MANDATORY
         return repo.save(existing);
     }
 

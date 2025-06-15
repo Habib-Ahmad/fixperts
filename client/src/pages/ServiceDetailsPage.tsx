@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { getServiceById, getUserById } from '../api';
-import { Service, User } from '../interfaces';
+import { useParams, Link } from 'react-router-dom';
+import { getServiceById, getUserById, getReviewsForService } from '../api';
+import { Service, User, Review } from '../interfaces';
 import { Loader, Badge, Button, Modal, BookingForm } from '../components';
 import { AlertCircle, StarIcon, Clock, MessageSquare, CreditCard } from 'lucide-react';
 import { toast } from 'sonner';
@@ -13,6 +13,7 @@ const ServiceDetailsPage = () => {
   const { id } = useParams<{ id: string }>();
   const [service, setService] = useState<Service | null>(null);
   const [provider, setProvider] = useState<User | null>(null);
+  const [reviews, setReviews] = useState<(Review & { author?: User })[]>([]);
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const currentUser = JSON.parse(localStorage.getItem('user') || 'null');
@@ -29,6 +30,19 @@ const ServiceDetailsPage = () => {
 
         const providerInfo = await getUserById(result.providerId);
         setProvider(providerInfo);
+
+        const fetchedReviews = await getReviewsForService(result.id);
+        const withAuthors = await Promise.all(
+          fetchedReviews.map(async (r: Review) => {
+            try {
+              const author = await getUserById(r.authorId);
+              return { ...r, author };
+            } catch {
+              return r;
+            }
+          })
+        );
+        setReviews(withAuthors);
       } catch (error) {
         toast.error(getErrorMessage(error) || 'Failed to load service');
       } finally {
@@ -80,12 +94,13 @@ const ServiceDetailsPage = () => {
 
           <div className="flex flex-wrap items-center gap-4">
             <span className="text-xl text-primary font-semibold">${service.price}/hour</span>
-
-            <div className="flex items-center text-sm text-muted-foreground gap-1">
-              <StarIcon className="w-4 h-4" />
-              {service.averageRating.toFixed(1)} rating
+            <div className="flex items-center text-sm gap-1">
+              <StarIcon className="w-4 h-4 fill-yellow-400 stroke-yellow-400" />
+              <span className="text-yellow-600 font-medium">
+                {service.averageRating.toFixed(1)}
+              </span>
+              <span className="text-muted-foreground text-yellow-600 ">rating</span>
             </div>
-
             {service.emergencyAvailable && (
               <Badge variant="secondary" className="flex items-center gap-1">
                 <AlertCircle className="w-4 h-4 text-red-400" />
@@ -117,7 +132,6 @@ const ServiceDetailsPage = () => {
               <Modal open={showModal} onClose={() => setShowModal(false)} title="Book This Service">
                 <BookingForm service={service} />
               </Modal>
-
               <Button variant="outline" className="w-full sm:w-fit">
                 <MessageSquare className="w-4 h-4 mr-2" />
                 Message Provider
@@ -144,8 +158,6 @@ const ServiceDetailsPage = () => {
           </section>
         )}
 
-
-
         <section>
           <h2 className="text-xl font-semibold mb-2">What to Expect</h2>
           <p className="text-sm text-muted-foreground leading-relaxed">
@@ -163,6 +175,7 @@ const ServiceDetailsPage = () => {
             <span className="font-medium text-foreground">Card, Bank Transfer, and Cash</span>
           </div>
         </section>
+
         <section>
           <h2 className="text-xl font-semibold mb-2">Need Help?</h2>
           <p className="text-sm text-muted-foreground">
@@ -172,6 +185,48 @@ const ServiceDetailsPage = () => {
             </a>
             .
           </p>
+        </section>
+
+        <section>
+          <h2 className="text-xl font-semibold mb-2">Reviews</h2>
+          {reviews.length === 0 ? (
+            <p className="text-muted-foreground text-sm">No reviews yet.</p>
+          ) : (
+            <div className="space-y-4">
+              {reviews.map((review, idx) => (
+                <div key={idx} className="border rounded-lg p-4 shadow-sm">
+                  <div className="flex items-center gap-3 mb-2">
+                    <img
+                      src={
+                        review.author?.profilePictureUrl
+                          ? `http://localhost:8081${review.author.profilePictureUrl}`
+                          : 'https://github.com/shadcn.png'
+                      }
+                      className="w-8 h-8 rounded-full object-cover border"
+                      alt="Reviewer"
+                    />
+                    <div>
+                      <Link
+                        to={`/profile/${review.author?.id}`}
+                        className="font-medium text-foreground hover:underline"
+                      >
+                        {review.author?.firstName} {review.author?.lastName}
+                      </Link>
+                      <p className="text-xs text-muted-foreground">
+                        {new Date(review.createdAt).toLocaleDateString()}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1 text-yellow-500 mb-1">
+                    {Array.from({ length: review.rating }).map((_, i) => (
+                      <StarIcon key={i} className="w-4 h-4 fill-yellow-400 stroke-yellow-400" />
+                    ))}
+                  </div>
+                  <p className="text-sm text-foreground">{review.comment}</p>
+                </div>
+              ))}
+            </div>
+          )}
         </section>
       </div>
     </div>
