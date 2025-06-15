@@ -46,3 +46,13 @@ export const approveService = async (id: string): Promise<void> => {
 export const rejectService = async (id: string): Promise<void> => {
   await api.put(urls.admin.rejectService(id));
 };
+
+export const getAdminOverview = async (): Promise<Record<string, number>> => {
+  const { data } = await api.get('/admin/stats/overview');
+  return data;
+};
+
+export const getBookingsByDay = async (days = 30): Promise<Record<string, number>> => {
+  const { data } = await api.get(`/admin/stats/bookings-by-day?days=${days}`);
+  return data;
+};

@@ -45,6 +45,10 @@ export const urls = {
 
     getAllReviews: '/admin/reviews',
     deleteReview: (id: string) => `/admin/reviews/${id}`,
+
+    statsOverview: '/admin/stats/overview',
+    bookingsByDay: (days = 30) => `/admin/stats/bookings-by-day?days=${days}`,
+
   },
   reviews: {
     create: (bookingId: string) => `/reviews/${bookingId}`,
