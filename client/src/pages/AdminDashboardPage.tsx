@@ -10,6 +10,10 @@ const AdminDashboardPage = () => {
           <h2 className="text-xl font-semibold mb-2">Manage Reviews</h2>
           <p>View and delete user-submitted reviews.</p>
         </Link>
+        <Link to="/admin/users" className="p-4 border rounded hover:shadow-lg">
+            <h2 className="text-xl font-semibold mb-2">All Users</h2>
+            <p>View and manage all users and ban accounts.</p>
+        </Link>
         <Link to="/admin/banned-users" className="p-4 border rounded hover:shadow-lg">
           <h2 className="text-xl font-semibold mb-2">Banned Users</h2>
           <p>View and unban restricted users.</p>

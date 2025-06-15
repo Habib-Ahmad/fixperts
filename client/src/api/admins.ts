@@ -20,8 +20,17 @@ export const getAllUsers = async (): Promise<User[]> => {
   return data;
 };
 
+export const banUser = async (id: string): Promise<void> => {
+  await api.delete(urls.admin.deleteUser(id));
+};
+
 export const unbanUser = async (id: string): Promise<User> => {
   const { data } = await api.put<User>(A.updateUser(id), { isBanned: false });
+  return data;
+};
+
+export const updateUser = async (id: string, updates: Partial<User>): Promise<User> => {
+  const { data } = await api.put<User>(urls.admin.updateUser(id), updates);
   return data;
 };
 

@@ -16,6 +16,7 @@ import AdminBannedUsersPage from './pages/AdminBannedUsers';
 import AdminServicesPage from './pages/AdminServicesPage';
 import UserProfilePage from './pages/UserProfile';
 import AdminDashboardPage from './pages/AdminDashboardPage';
+import AdminAllUsersPage from './pages/AdminAllUsersPage';
 import path from 'path';
 
 const routes = [
@@ -38,6 +39,7 @@ const routes = [
       { path: '/admin/reviews', element: <AdminReviewsPage />},
       { path: '/admin/banned-users', element: <AdminBannedUsersPage /> },
       { path: '/admin/pending-services', element: <AdminServicesPage /> },
+      { path: '/admin/users', element: <AdminAllUsersPage /> },
       { path: '/admin/dashboard', element: <AdminDashboardPage /> },
     ],
   },

@@ -107,5 +107,23 @@ public class BookingController {
         return ResponseEntity.ok(paid);
     }
 
+    @SecurityRequirement(name = "bearerAuth")
+    @GetMapping("/{id}")
+    public ResponseEntity<Booking> getBookingById(@PathVariable String id, @AuthenticationPrincipal User requester) {
+        Booking booking = bookingService.getById(id);
+
+        // Allow access only if:
+        // - Admin
+        // - or booking belongs to this customer or provider
+        if (!requester.getRole().equals(User.Role.ADMIN) &&
+                !booking.getCustomerId().equals(requester.getId()) &&
+                !booking.getProviderId().equals(requester.getId())) {
+            return ResponseEntity.status(403).build();
+        }
+
+        return ResponseEntity.ok(booking);
+    }
+
+
 
 }
