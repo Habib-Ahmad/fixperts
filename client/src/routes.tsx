@@ -19,6 +19,13 @@ import AdminDashboardPage from './pages/AdminDashboardPage';
 import AdminAllUsersPage from './pages/AdminAllUsersPage';
 import SchedulePage from './pages/SchedulePage';
 import InboxPage from './pages/InboxPage';
+import ContactPage from './pages/ContactPage';
+import HelpCenterPage from './pages/HelpCenterPage';
+import FaqPage from './pages/FaqPage';
+import CareersPage from './pages/CareersPage';
+import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
+import TermsOfServicePage from './pages/TermsOfServicePage';
+
 
 const routes = [
   {
@@ -44,6 +51,13 @@ const routes = [
       { path: '/admin/pending-services', element: <AdminServicesPage /> },
       { path: '/admin/users', element: <AdminAllUsersPage /> },
       { path: '/admin/dashboard', element: <AdminDashboardPage /> },
+      { path: '/contact', element: <ContactPage /> },
+      { path: '/help', element: <HelpCenterPage /> },
+      { path: '/faq', element: <FaqPage /> },
+      { path: '/careers', element: <CareersPage /> },
+      { path: '/privacy-policy', element: <PrivacyPolicyPage /> },
+      { path: '/terms-of-service', element: <TermsOfServicePage /> },
+
     ],
   },
 ];
