@@ -44,10 +44,10 @@ const UserMenu = ({
       <div className="mt-6">
         <p className="text-sm mb-2">{userName}</p>
         <Button variant="outline" className="w-full mb-2" asChild>
-          <Link to="/profile">Profile</Link>
+          <Link to={`/profile/${user.id}`}> Profile</Link>
         </Button>
         <Button variant="outline" className="w-full mb-2" asChild>
-          <Link to="/settings">Settings</Link>
+          <Link to="/profile">Settings</Link>
         </Button>
         <Button variant="destructive" className="w-full" onClick={onLogout}>
           Logout
@@ -75,10 +75,10 @@ const UserMenu = ({
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuItem asChild>
-          <Link to="/profile">Profile</Link>
+          <Link to={`/profile/${user.id}`}>Profile</Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
-          <Link to="/settings">Settings</Link>
+          <Link to="/profile">Settings</Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={onLogout}>Logout</DropdownMenuItem>
