@@ -1,4 +1,4 @@
-import { Layout } from './layouts';
+import { Layout, LayoutNoFooter } from './layouts';
 import AboutUsPage from './pages/AboutUs';
 import BookingsPage from './pages/BookingsPage';
 import CreateServicePage from './pages/CreateServicePage';
@@ -26,7 +26,6 @@ import CareersPage from './pages/CareersPage';
 import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
 import TermsOfServicePage from './pages/TermsOfServicePage';
 
-
 const routes = [
   {
     element: <Layout />,
@@ -45,8 +44,7 @@ const routes = [
       { path: '/profile', element: <ProfilePage /> },
       { path: '/profile/:id', element: <UserProfilePage /> },
       { path: '/about', element: <AboutUsPage /> },
-      { path: '/inbox', element: <InboxPage /> },
-      { path: '/admin/reviews', element: <AdminReviewsPage />},
+      { path: '/admin/reviews', element: <AdminReviewsPage /> },
       { path: '/admin/banned-users', element: <AdminBannedUsersPage /> },
       { path: '/admin/pending-services', element: <AdminServicesPage /> },
       { path: '/admin/users', element: <AdminAllUsersPage /> },
@@ -57,8 +55,11 @@ const routes = [
       { path: '/careers', element: <CareersPage /> },
       { path: '/privacy-policy', element: <PrivacyPolicyPage /> },
       { path: '/terms-of-service', element: <TermsOfServicePage /> },
-
     ],
+  },
+  {
+    element: <LayoutNoFooter />,
+    children: [{ path: '/inbox', element: <InboxPage /> }],
   },
 ];
 

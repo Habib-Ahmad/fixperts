@@ -24,7 +24,9 @@ const InboxPage = () => {
   const [activeConversation, setActiveConversation] = useState<Conversation | null>(null);
 
   const bottomOfMessagesRef = useRef<HTMLDivElement>(null);
-  useEffect(() => {}, [messages, activeConversation]);
+  useEffect(() => {
+    bottomOfMessagesRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages, activeConversation]);
 
   const handleSelectConversation = useCallback(
     async (convo: Conversation) => {
@@ -80,13 +82,6 @@ const InboxPage = () => {
       })
     );
   });
-  useEffect(() => {
-    const load = async () => {
-      const conversations = await getConversationsByUserId(user.id);
-      setConversations(conversations);
-    };
-    load();
-  }, [user.id]);
 
   const handleSendMessage = async () => {
     if (!newMessage.trim() || !activeConversation) return;
@@ -113,7 +108,7 @@ const InboxPage = () => {
   };
 
   return (
-    <div className="container mx-auto p-2">
+    <div className="h-screen p-2 overflow-hidden flex flex-col">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {/* Conversations List */}
         <Card className="md:col-span-1 p-3">
@@ -131,49 +126,59 @@ const InboxPage = () => {
           </div>
 
           <ScrollArea className="h-[calc(80vh-120px)]">
-            {conversations.length > 0 ? (
-              conversations.map((conversation) => (
-                <div key={conversation.id}>
-                  <div
-                    className={`flex items-center justify-between p-3 cursor-pointer transition-colors rounded-md ${
-                      activeConversation?.id === conversation.id
-                        ? 'bg-green-100'
-                        : 'hover:bg-gray-100'
-                    }`}
-                    onClick={() => handleSelectConversation(conversation)}
-                  >
-                    <div className="flex items-center space-x-3">
-                      <div className="relative">
-                        <img
-                          src={`${MEDIA_BASE_URL}${conversation.otherParticipant?.profilePictureUrl}`}
-                          alt="Avatar"
-                          className="w-10 h-10 rounded-full object-cover"
-                        />
+            {conversations.filter((c) => {
+              const name =
+                `${c.otherParticipant.firstName} ${c.otherParticipant.lastName}`.toLowerCase();
+              return name.includes(searchQuery.toLowerCase());
+            }).length > 0 ? (
+              conversations
+                .filter((c) => {
+                  const name =
+                    `${c.otherParticipant.firstName} ${c.otherParticipant.lastName}`.toLowerCase();
+                  return name.includes(searchQuery.toLowerCase());
+                })
+                .map((conversation) => (
+                  <div key={conversation.id}>
+                    <div
+                      className={`flex items-center justify-between p-3 cursor-pointer transition-colors rounded-md ${
+                        activeConversation?.id === conversation.id
+                          ? 'bg-green-100'
+                          : 'hover:bg-gray-100'
+                      }`}
+                      onClick={() => handleSelectConversation(conversation)}
+                    >
+                      <div className="flex items-center space-x-3">
+                        <div className="relative">
+                          <img
+                            src={`${MEDIA_BASE_URL}${conversation.otherParticipant?.profilePictureUrl}`}
+                            alt="Avatar"
+                            className="w-10 h-10 rounded-full object-cover"
+                          />
+                        </div>
+                        <div>
+                          <div className="font-medium">
+                            {conversation.otherParticipant.firstName}{' '}
+                            {conversation.otherParticipant.lastName}
+                          </div>
+                          <div className="text-sm text-gray-500 truncate max-w-[150px]">
+                            {conversation.lastMessage}
+                          </div>
+                        </div>
                       </div>
-                      <div>
-                        <div className="font-medium">
-                          {conversation.otherParticipant.firstName}{' '}
-                          {conversation.otherParticipant.lastName}
+                      <div className="text-right">
+                        <div className="text-xs text-gray-500">
+                          {formatConversationTime(conversation.lastMessageTime)}
                         </div>
-                        <div className="text-sm text-gray-500 truncate max-w-[150px]">
-                          {conversation.lastMessage}
-                        </div>
+                        {conversation.unreadCount > 0 && (
+                          <div className="bg-green-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs mt-1">
+                            {conversation.unreadCount}
+                          </div>
+                        )}
                       </div>
                     </div>
-                    <div className="text-right">
-                      <div className="text-xs text-gray-500">
-                        {formatConversationTime(conversation.lastMessageTime)}
-                      </div>
-                      {conversation.unreadCount > 0 && (
-                        <div className="bg-green-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs mt-1">
-                          {conversation.unreadCount}
-                        </div>
-                      )}
-                    </div>
+                    <Separator />
                   </div>
-                  <Separator />
-                </div>
-              ))
+                ))
             ) : (
               <div className="p-4 text-center text-gray-500">No conversations found</div>
             )}
@@ -181,7 +186,7 @@ const InboxPage = () => {
         </Card>
 
         {/* Messages Area */}
-        <Card className="md:col-span-2 flex flex-col h-[80vh]">
+        <Card className="md:col-span-2 flex flex-col h-[80vh] min-h-0">
           {activeConversation ? (
             <>
               {/* Conversation Header */}
@@ -199,7 +204,7 @@ const InboxPage = () => {
               </div>
 
               {/* Messages */}
-              <ScrollArea className="flex-grow p-4 overflow-y-auto">
+              <div className="flex-grow overflow-y-auto px-4 py-2">
                 <div className="space-y-4">
                   {messages.map((message) => {
                     const isCurrentUser = message.senderId === user.id;
@@ -230,7 +235,7 @@ const InboxPage = () => {
                   })}
                   <div ref={bottomOfMessagesRef}></div>
                 </div>
-              </ScrollArea>
+              </div>
 
               {/* Message Input */}
               <div className="p-3 border-t">
