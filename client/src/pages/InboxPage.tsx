@@ -47,7 +47,7 @@ const InboxPage = () => {
       setConversations(loadedConversations);
 
       if (urlConversationId) {
-        const found = loadedConversations.find((c) => c.id === urlConversationId);
+        const found = loadedConversations.find((c: Conversation) => c.id === urlConversationId);
         if (found) {
           handleSelectConversation(found);
         }
@@ -55,11 +55,31 @@ const InboxPage = () => {
     };
     load();
   }, [user.id, urlConversationId, handleSelectConversation]);
-
+  const activeConversationRef = useRef<Conversation | null>(null);
+  useEffect(() => {
+    activeConversationRef.current = activeConversation;
+  }, [activeConversation]);
   useChatSocket(activeConversation?.id || null, (newMsg) => {
-    setMessages((prev) => [...prev, newMsg]);
-  });
+    const isCurrent = newMsg.conversationId === activeConversationRef.current?.id;
 
+    if (isCurrent) {
+      setMessages((prev) => [...prev, newMsg]);
+    }
+
+    setConversations((prev) =>
+      prev.map((c) => {
+        if (c.id === newMsg.conversationId) {
+          return {
+            ...c,
+            lastMessage: newMsg.content,
+            lastMessageTime: newMsg.timestamp,
+            unreadCount: isCurrent ? 0 : c.unreadCount + 1,
+          };
+        }
+        return c;
+      })
+    );
+  });
   useEffect(() => {
     const load = async () => {
       const conversations = await getConversationsByUserId(user.id);

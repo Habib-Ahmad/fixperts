@@ -59,12 +59,7 @@ const ServicesPage = () => {
   }, []);
 
   const handleSearch = async () => {
-    if (advanced) {
-      await fetchAdvanced();
-    } else {
-      // fallback: just filter locally or use getAllServices and filter manually
-      fetchAll();
-    }
+    await fetchAdvanced();
   };
 
   return (
