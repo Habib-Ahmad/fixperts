@@ -24,9 +24,7 @@ const InboxPage = () => {
   const [activeConversation, setActiveConversation] = useState<Conversation | null>(null);
 
   const bottomOfMessagesRef = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    bottomOfMessagesRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages, activeConversation]);
+  useEffect(() => {}, [messages, activeConversation]);
 
   const handleSelectConversation = useCallback(
     async (convo: Conversation) => {
@@ -44,13 +42,19 @@ const InboxPage = () => {
   );
 
   useEffect(() => {
-    if (!urlConversationId || conversations.length === 0) return;
+    const load = async () => {
+      const loadedConversations = await getConversationsByUserId(user.id);
+      setConversations(loadedConversations);
 
-    const found = conversations.find((c) => c.id === urlConversationId);
-    if (found) {
-      handleSelectConversation(found);
-    }
-  }, [urlConversationId, conversations, handleSelectConversation]);
+      if (urlConversationId) {
+        const found = loadedConversations.find((c) => c.id === urlConversationId);
+        if (found) {
+          handleSelectConversation(found);
+        }
+      }
+    };
+    load();
+  }, [user.id, urlConversationId, handleSelectConversation]);
 
   useChatSocket(activeConversation?.id || null, (newMsg) => {
     setMessages((prev) => [...prev, newMsg]);
