@@ -14,7 +14,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from '.';
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Menu } from 'lucide-react';
 import logo from '@/assets/logo.svg';
 import { User } from '../interfaces';
@@ -90,6 +90,8 @@ const UserMenu = ({
 const Navbar = () => {
   const [user, setUser] = useState<User | null>(null);
   const [services, setServices] = useState([]);
+  const location = useLocation();
+  const navigate = useNavigate();
 
   const isAdmin = user?.role === 'ADMIN';
   const isProvider = services.length > 0;
@@ -140,17 +142,26 @@ const Navbar = () => {
     localStorage.removeItem('user');
     localStorage.removeItem('token');
     setUser(null);
+    navigate('/login');
   };
 
   const NavLinks = () => (
     <ul className="flex flex-col md:flex-row gap-4 md:gap-6">
-      {links.map((link) => (
-        <li key={link.name}>
-          <Link to={link.path} className="text-gray-500 hover:text-black text-sm">
-            {link.name}
-          </Link>
-        </li>
-      ))}
+      {links.map((link) => {
+        const isActive = location.pathname === link.path;
+        return (
+          <li key={link.name}>
+            <Link
+              to={link.path}
+              className={`text-sm transition-colors ${
+                isActive ? 'text-black font-semibold' : 'text-gray-500 hover:text-black'
+              }`}
+            >
+              {link.name}
+            </Link>
+          </li>
+        );
+      })}
     </ul>
   );
 
