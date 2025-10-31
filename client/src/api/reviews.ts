@@ -1,6 +1,5 @@
 import api from './api';
 import { urls } from './urls';
-import { ReviewPayload } from '../interfaces';
 
 // Create a review (client or provider)
 export const createReview = async (

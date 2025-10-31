@@ -106,6 +106,7 @@ const CreateServicePage = () => {
           category: 'HANDYMAN',
           emergencyAvailable: false,
           mediaUrls: [] as File[],
+          isValidated: false,
         }}
         validationSchema={validationSchema}
         onSubmit={handleSubmit}

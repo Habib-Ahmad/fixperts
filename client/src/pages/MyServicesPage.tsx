@@ -158,6 +158,7 @@ const MyServicesPage = () => {
                               emergencyAvailable: selected.emergencyAvailable,
                               averageRating: selected.averageRating,
                               mediaUrls: [''],
+                              isValidated: selected.validated,
                             }}
                             validationSchema={validationSchema}
                             onSubmit={handleEdit}

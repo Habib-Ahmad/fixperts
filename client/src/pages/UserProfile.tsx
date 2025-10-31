@@ -7,7 +7,7 @@ import {
   getServicesByProviderId,
 } from '../api';
 import { User, Review, Service } from '../interfaces';
-import { Loader, Badge, Button } from '../components';
+import { Loader, Button } from '../components';
 import { toast } from 'sonner';
 import { getErrorMessage } from '../utils';
 import { StarIcon } from 'lucide-react';
