@@ -1,37 +1,32 @@
 # ------------------------------------------------------------------------------
-# Build stage: compiles the Spring Boot app using Maven Wrapper
+# Build stage: compile the Spring Boot app with Maven (no wrapper needed)
 # ------------------------------------------------------------------------------
-FROM eclipse-temurin:21-jdk AS build
+FROM maven:3.9-eclipse-temurin-21 AS build
 WORKDIR /app
 
-# Copy only Maven wrapper & pom first to leverage Docker layer caching
-# (Dependencies are downloaded once unless pom/wrapper changes.)
-COPY server/pom.xml server/mvnw server/.mvn/ ./server/
-RUN chmod +x server/mvnw
-RUN ./server/mvnw -q -f server/pom.xml -B -DskipTests dependency:go-offline
+# Copy only pom first to cache dependencies between builds
+COPY server/pom.xml server/pom.xml
+RUN mvn -q -f server/pom.xml -B -DskipTests dependency:go-offline
 
-# Now copy the application sources and build the jar
-COPY server/ ./server/
-RUN ./server/mvnw -q -f server/pom.xml -B -DskipTests package
+# Now copy sources and build the jar
+COPY server/src/ server/src/
+RUN mvn -q -f server/pom.xml -B -DskipTests package
 
 # ------------------------------------------------------------------------------
-# Run stage: runs the fat jar on a slim JRE
+# Run stage: run the fat jar on a slim JRE
 # ------------------------------------------------------------------------------
 FROM eclipse-temurin:21-jre
 WORKDIR /app
 
-# JVM memory tuning: respect container limits
+# Respect container memory limits
 ENV JAVA_OPTS="-XX:MaxRAMPercentage=75.0"
 
-# Render injects PORT at runtime; expose for local clarity
+# Render will inject PORT; default to 8080 for local runs
 ENV PORT=8080
 EXPOSE 8080
 
-# Copy the built jar from the build stage
+# Copy artifact from build stage
 COPY --from=build /app/server/target/*.jar /app/app.jar
 
-# Start the application:
-# - Pass server.port from the PORT env var (Render sets this)
-# - Allow optional SPRING_PROFILES_ACTIVE for profile selection
+# Start app; bind to Render's $PORT
 CMD ["sh", "-c", "java $JAVA_OPTS -Dserver.port=${PORT} -Dspring.profiles.active=${SPRING_PROFILES_ACTIVE:-} -jar /app/app.jar"]
-
