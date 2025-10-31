@@ -1,6 +1,7 @@
 import twitter from '@/assets/twitter.svg';
 import instagram from '@/assets/instagram.svg';
 import discord from '@/assets/discord.svg';
+import { Link } from 'react-router-dom';
 
 type FooterLink = {
   label: string;
@@ -45,17 +46,16 @@ const Footer = () => {
             <h3 className="font-semibold mb-4">{section}</h3>
             <ul className="space-y-2">
               {links.map(({ label, href, external }) => (
-                <li key={label}>
-                  <a
-                    href={href}
-                    target={external ? '_blank' : '_self'}
-                    rel={external ? 'noopener noreferrer' : undefined}
-                    className="hover:text-primary flex items-center gap-2"
-                  >
-                    {socialIcons[label] && <span>{socialIcons[label]}</span>}
-                    {label}
-                  </a>
-                </li>
+                <Link
+                  key={label}
+                  to={href}
+                  target={external ? '_blank' : '_self'}
+                  rel={external ? 'noopener noreferrer' : undefined}
+                  className="hover:text-primary flex items-center gap-2"
+                >
+                  {socialIcons[label] && <span>{socialIcons[label]}</span>}
+                  {label}
+                </Link>
               ))}
             </ul>
           </div>
