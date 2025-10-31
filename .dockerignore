@@ -1,5 +1,4 @@
 .git
-client
 **/node_modules
 **/target
 **/.idea
