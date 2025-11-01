@@ -46,6 +46,13 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/user/{userId}").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/services/**").permitAll()
                         .requestMatchers("/uploads/**").permitAll()
+                        .requestMatchers(
+                                "/static/**",
+                                "/public/**",
+                                "/images/**",
+                                "/css/**",
+                                "/js/**")
+                        .permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()));
@@ -62,7 +69,6 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOrigins(ALLOWED_ORIGINS);
-        System.out.println("🔍 Allowed CORS origins: " + ALLOWED_ORIGINS);
 
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD"));
         config.setAllowedHeaders(List.of("Authorization", "Content-Type", "X-Requested-With", "Accept", "Origin"));
