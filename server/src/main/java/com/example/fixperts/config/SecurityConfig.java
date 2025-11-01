@@ -1,7 +1,6 @@
 package com.example.fixperts.config;
 
 import com.example.fixperts.security.JwtAuthenticationFilter;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -25,8 +24,9 @@ public class SecurityConfig {
         this.jwtAuthFilter = jwtAuthFilter;
     }
 
-    @Value("${app.cors.allowed-origins:https://fixperts.onrender.com,http://localhost:5173}")
-    private List<String> allowedOrigins;
+    private static final List<String> ALLOWED_ORIGINS = List.of(
+            "https://fixperts.onrender.com",
+            "http://localhost:5173");
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -61,8 +61,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(allowedOrigins);
-        System.out.println("🔍 Allowed CORS origins: " + allowedOrigins);
+        config.setAllowedOrigins(ALLOWED_ORIGINS);
 
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD"));
         config.setAllowedHeaders(List.of("Authorization", "Content-Type", "X-Requested-With", "Accept", "Origin"));
